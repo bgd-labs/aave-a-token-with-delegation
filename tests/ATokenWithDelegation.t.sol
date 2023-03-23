@@ -4,14 +4,14 @@ pragma solidity ^0.8.0;
 import 'forge-std/Test.sol';
 import {IPool, ATokenWithDelegation, IATokenWithDelegation, IGovernancePowerDelegationToken} from '../src/contracts/ATokenWithDelegation.sol';
 
+contract PoolMock {
+  address public constant ADDRESSES_PROVIDER = address(12351);
+}
+
 contract ATokenWithDelegationTest is Test, ATokenWithDelegation {
-  IPool constant pool = IPool(address(123));
+  function setUp() public {}
 
-  constructor() ATokenWithDelegation(pool) {}
-
-  function setUp() public {
-    console.log('test');
-  }
+  constructor() ATokenWithDelegation(IPool(address(new PoolMock()))) {}
 
   function testSomething() public {}
 }
