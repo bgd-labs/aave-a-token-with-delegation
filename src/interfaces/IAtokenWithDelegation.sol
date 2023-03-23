@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 interface IATokenWithDelegation {
@@ -15,4 +15,12 @@ interface IATokenWithDelegation {
     uint72 delegatedVotingBalance;
     DelegationState delegationState;
   }
+
+  function POWER_SCALE_FACTOR() external view returns (uint256);
+
+  function DELEGATE_BY_TYPE_TYPEHASH() external view returns (bytes32);
+
+  function DELEGATE_TYPEHASH() external view returns (bytes32);
+
+  function DELEGATE_DOMAIN_SEPARATOR() external view returns (bytes32);
 }

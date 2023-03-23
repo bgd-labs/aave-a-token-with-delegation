@@ -32,17 +32,12 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
   bytes32 public DELEGATE_DOMAIN_SEPARATOR;
 
   constructor(IPool pool) AToken(pool) {
-    uint256 chainId;
-    assembly {
-      chainId := chainid()
-    }
-
     DELEGATE_DOMAIN_SEPARATOR = keccak256(
       abi.encode(
         EIP712_DOMAIN,
         keccak256(bytes(name())),
         keccak256(EIP712_REVISION),
-        chainId,
+        _chainId,
         address(this)
       )
     );
