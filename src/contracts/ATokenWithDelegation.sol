@@ -9,6 +9,8 @@ import {IATokenWithDelegation} from '../interfaces/IATokenWithDelegation.sol';
 /**
  * @author BGD Labs
  * @notice contract that gives a tokens the delegation functionality. For now should only be used for AAVE aToken
+ * @dev uint sizes are used taken into account that is tailored for AAVE token. In this AToken child we only update
+        delegation balances. Balances amount is taken care of by AToken contract
  */
 contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IATokenWithDelegation {
   mapping(address => address) internal _votingDelegateeV2;
