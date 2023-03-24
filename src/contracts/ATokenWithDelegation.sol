@@ -188,7 +188,7 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
   ) internal {
     if (delegatee == address(0)) return;
     if (impactOnDelegationBefore == impactOnDelegationAfter) return;
-
+    // TODO: dont fully get this method
     // To make delegated balance fit into uint72 we're decreasing precision of delegated balance by POWER_SCALE_FACTOR
     uint72 impactOnDelegationBefore72 = uint72(impactOnDelegationBefore / POWER_SCALE_FACTOR);
     uint72 impactOnDelegationAfter72 = uint72(impactOnDelegationAfter / POWER_SCALE_FACTOR);

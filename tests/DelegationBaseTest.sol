@@ -27,15 +27,39 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     _;
   }
 
+  // validates no changes happened in delegation balance for a user and delegation type
+  modifier validateNoChanges(
+    address user,
+    IGovernancePowerDelegationToken.GovernancePowerType delegationType
+  ) {
+    uint104 beforeDelegationPowerOfUser = _getDelegationBalanceByType(user, delegationType);
+
+    _;
+
+    uint104 afterDelegationPowerOfUser = _getDelegationBalanceByType(user, delegationType);
+
+    // ----------------------------- VALIDATIONS ----------------------------------------------
+    assertEq(beforeDelegationPowerOfUser, afterDelegationPowerOfUser);
+  }
+
+  modifier validateUserTokenBalance(address user) {
+    uint128 beforeDelegationActualBalanceOfDelegator = _getHolderActualBalance(user);
+
+    _;
+    uint128 afterDelegationActualBalanceOfDelegator = _getHolderActualBalance(user);
+
+    // ----------------------------- VALIDATIONS ----------------------------------------------
+    // actual a token balance should not have changed
+    assertEq(beforeDelegationActualBalanceOfDelegator, afterDelegationActualBalanceOfDelegator);
+  }
+
   modifier validateDelegationPower(
     address delegator,
     address delegationRecipient,
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
   ) {
     uint128 beforeDelegationActualBalanceOfDelegator = _getHolderActualBalance(delegator);
-    uint128 beforeDelegationActualBalanceOfDelegationRecipient = _getHolderActualBalance(
-      delegationRecipient
-    );
+
     uint104 beforeDelegationPowerOfDelegator = _getDelegationBalanceByType(
       delegator,
       delegationType
@@ -47,10 +71,6 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
 
     _;
 
-    uint128 afterDelegationActualBalanceOfDelegator = _getHolderActualBalance(delegator);
-    uint128 afterDelegationActualBalanceOfDelegationRecipient = _getHolderActualBalance(
-      delegationRecipient
-    );
     uint104 afterDelegationPowerOfDelegator = _getDelegationBalanceByType(
       delegator,
       delegationType
@@ -60,19 +80,12 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       delegationType
     );
 
-    // ----------------------------- VALIDATIONS ----------------------------------------------
-    // actual a token balance should not have changed
-    assertEq(beforeDelegationActualBalanceOfDelegator, afterDelegationActualBalanceOfDelegator);
-    assertEq(
-      beforeDelegationActualBalanceOfDelegationRecipient,
-      afterDelegationActualBalanceOfDelegationRecipient
-    );
-
     // balance of delegator moved to delegation recipient
     assertEq(afterDelegationPowerOfDelegator, 0);
     assertEq(
-      afterDelegationActualBalanceOfDelegationRecipient,
-      uint72(beforeDelegationActualBalanceOfDelegationRecipient) + beforeDelegationPowerOfDelegator
+      afterDelegationPowerOfDelegationRecipient,
+      uint72(beforeDelegationActualBalanceOfDelegator / POWER_SCALE_FACTOR) +
+        beforeDelegationPowerOfDelegator
     );
   }
 
