@@ -12,12 +12,17 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   function testDelegateTypeVotingPowerToUser()
     public
     mintAmount(USER_1)
-    validateDelegationByType(
+    validateDelegationPower(
       USER_1,
       USER_2,
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     )
     validateDelegationState(USER_1, USER_2, DelegationType.VOTING)
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
   {
     _delegateByType(USER_1, USER_2, IGovernancePowerDelegationToken.GovernancePowerType.VOTING);
   }

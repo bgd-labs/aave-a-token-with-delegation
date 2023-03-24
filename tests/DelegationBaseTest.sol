@@ -27,7 +27,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     _;
   }
 
-  modifier validateDelegationByType(
+  modifier validateDelegationPower(
     address delegator,
     address delegationRecipient,
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
@@ -36,11 +36,11 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     uint128 beforeDelegationActualBalanceOfDelegationRecipient = _getHolderActualBalance(
       delegationRecipient
     );
-    uint104 beforeDelegationVotingPowerOfDelegator = _getDelegationBalanceByType(
+    uint104 beforeDelegationPowerOfDelegator = _getDelegationBalanceByType(
       delegator,
       delegationType
     );
-    uint104 beforeDelegationVotingPowerOfDelegationRecipient = _getDelegationBalanceByType(
+    uint104 beforeDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
       delegationRecipient,
       delegationType
     );
@@ -51,11 +51,11 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     uint128 afterDelegationActualBalanceOfDelegationRecipient = _getHolderActualBalance(
       delegationRecipient
     );
-    uint104 afterDelegationVotingPowerOfDelegator = _getDelegationBalanceByType(
+    uint104 afterDelegationPowerOfDelegator = _getDelegationBalanceByType(
       delegator,
       delegationType
     );
-    uint104 afterDelegationVotingPowerOfDelegationRecipient = _getDelegationBalanceByType(
+    uint104 afterDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
       delegationRecipient,
       delegationType
     );
@@ -69,11 +69,10 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     );
 
     // balance of delegator moved to delegation recipient
-    assertEq(afterDelegationVotingPowerOfDelegator, 0);
+    assertEq(afterDelegationPowerOfDelegator, 0);
     assertEq(
       afterDelegationActualBalanceOfDelegationRecipient,
-      uint72(beforeDelegationActualBalanceOfDelegationRecipient) +
-        beforeDelegationVotingPowerOfDelegator
+      uint72(beforeDelegationActualBalanceOfDelegationRecipient) + beforeDelegationPowerOfDelegator
     );
   }
 
@@ -116,6 +115,19 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       uint8(beforeDelegationStateOfDelegationRecipient),
       uint8(afterDelegationStateOfDelegationRecipient)
     );
+  }
+
+  modifier validateDelegationReceiver(
+    address delegator,
+    address delegationReceiver,
+    IGovernancePowerDelegationToken.GovernancePowerType delegationType
+  ) {
+    _;
+    if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
+      assertEq(_votingDelegateeV2[delegator], delegationReceiver);
+    } else {
+      assertEq(_propositionDelegateeV2[delegator], delegationReceiver);
+    }
   }
 
   function _getHolderActualBalance(address holder) internal returns (uint128) {
