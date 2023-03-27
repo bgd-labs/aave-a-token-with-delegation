@@ -46,8 +46,60 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     _;
   }
 
+  modifier validateNoChangesInDelegation(address user) {
+    address beforeVotingDelegatee = _votingDelegatee[user];
+    address beforePropositionDelegatee = _propositionDelegatee[user];
+    uint104 beforeDelegationVotingPowerOfUser = _getDelegationBalanceByType(
+      user,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    uint104 beforeDelegationPropositionPowerOfUser = _getDelegationBalanceByType(
+      user,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    IATokenWithDelegation.DelegationState delegationStateBefore = _delegatedBalances[user]
+      .delegationState;
+
+    _;
+
+    address afterVotingDelegatee = _votingDelegatee[user];
+    address afterPropositionDelegatee = _propositionDelegatee[user];
+    uint104 afterDelegationVotingPowerOfUser = _getDelegationBalanceByType(
+      user,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    uint104 afterDelegationPropositionPowerOfUser = _getDelegationBalanceByType(
+      user,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    IATokenWithDelegation.DelegationState delegationStateAfter = _delegatedBalances[user]
+      .delegationState;
+
+    assertEq(beforeVotingDelegatee, afterVotingDelegatee);
+    assertEq(beforePropositionDelegatee, afterPropositionDelegatee);
+    assertEq(beforeDelegationVotingPowerOfUser, afterDelegationVotingPowerOfUser);
+    assertEq(beforeDelegationPropositionPowerOfUser, afterDelegationPropositionPowerOfUser);
+    assertEq(uint8(delegationStateBefore), uint8(delegationStateAfter));
+  }
+
+  modifier validateNoChangesInVotingDelegatee(address user) {
+    address beforeDelegatee = _votingDelegatee[user];
+    _;
+    address afterDelegatee = _votingDelegatee[user];
+
+    assertEq(beforeDelegatee, afterDelegatee);
+  }
+
+  modifier validateNoChangesInPropositionDelegatee(address user) {
+    address beforeDelegatee = _propositionDelegatee[user];
+    _;
+    address afterDelegatee = _propositionDelegatee[user];
+
+    assertEq(beforeDelegatee, afterDelegatee);
+  }
+
   // validates no changes happened in delegation balance for a user and delegation type
-  modifier validateNoChangesInDelegation(
+  modifier validateNoChangesInDelegationBalanceByType(
     address user,
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
   ) {
