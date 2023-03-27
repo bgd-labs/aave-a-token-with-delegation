@@ -10,25 +10,44 @@ contract PoolMock {
 
 contract DelegationBaseTest is Test, ATokenWithDelegation {
   uint256 constant INDEX = 1e27;
+  uint256 constant AMOUNT = 100 ether;
 
   constructor() ATokenWithDelegation(IPool(address(new PoolMock()))) {}
 
   enum DelegationType {
     VOTING,
-    PROPOSITIN,
+    PROPOSITION,
     FULL_POWER
   }
 
   modifier mintAmount(address caller) {
-    uint256 amountToMint = 100 ether;
+    _mintAmount(caller);
+    _;
+  }
 
-    hoax(address(POOL));
-    this.mint(caller, caller, amountToMint, INDEX);
+  // prepare a state where delegator is delegating full power to receiver
+  modifier prepareDelegationToReceiver(address delegator, address receiver) {
+    // set up delegator delegation balances
+    _delegatedBalances[delegator].delegationState = IATokenWithDelegation
+      .DelegationState
+      .FULL_POWER_DELEGATED;
+
+    // set up receiver delegation balances
+    _delegatedBalances[receiver].delegatedVotingBalance = uint72(
+      _userState[delegator].balance / POWER_SCALE_FACTOR
+    );
+    _delegatedBalances[receiver].delegatedPropositionBalance = uint72(
+      _userState[delegator].balance / POWER_SCALE_FACTOR
+    );
+
+    _votingDelegatee[delegator] = receiver;
+    _propositionDelegatee[delegator] = receiver;
+
     _;
   }
 
   // validates no changes happened in delegation balance for a user and delegation type
-  modifier validateNoChanges(
+  modifier validateNoChangesInDelegation(
     address user,
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
   ) {
@@ -40,6 +59,16 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
 
     // ----------------------------- VALIDATIONS ----------------------------------------------
     assertEq(beforeDelegationPowerOfUser, afterDelegationPowerOfUser);
+  }
+
+  modifier validateNoChangesInDelegationState(address user) {
+    IATokenWithDelegation.DelegationState delegationStateBefore = _delegatedBalances[user]
+      .delegationState;
+    _;
+    IATokenWithDelegation.DelegationState delegationStateAfter = _delegatedBalances[user]
+      .delegationState;
+
+    assertEq(uint8(delegationStateBefore), uint8(delegationStateAfter));
   }
 
   modifier validateUserTokenBalance(address user) {
@@ -60,33 +89,29 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
   ) {
     uint128 beforeDelegationActualBalanceOfDelegator = _getHolderActualBalance(delegator);
-
-    uint104 beforeDelegationPowerOfDelegator = _getDelegationBalanceByType(
+    uint72 beforeDelegationPowerOfDelegator = _getDelegationBalanceByType(
       delegator,
       delegationType
     );
-    uint104 beforeDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
+    uint72 beforeDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
       delegationRecipient,
       delegationType
     );
 
     _;
 
-    uint104 afterDelegationPowerOfDelegator = _getDelegationBalanceByType(
-      delegator,
-      delegationType
-    );
-    uint104 afterDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
+    uint72 afterDelegationPowerOfDelegator = _getDelegationBalanceByType(delegator, delegationType);
+    uint72 afterDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
       delegationRecipient,
       delegationType
     );
 
     // balance of delegator moved to delegation recipient
-    assertEq(afterDelegationPowerOfDelegator, 0);
+    assertEq(beforeDelegationPowerOfDelegator, afterDelegationPowerOfDelegator);
     assertEq(
       afterDelegationPowerOfDelegationRecipient,
-      uint72(beforeDelegationActualBalanceOfDelegator / POWER_SCALE_FACTOR) +
-        beforeDelegationPowerOfDelegator
+      beforeDelegationPowerOfDelegationRecipient +
+        uint72(beforeDelegationActualBalanceOfDelegator / POWER_SCALE_FACTOR)
     );
   }
 
@@ -139,9 +164,9 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   ) {
     _;
     if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
-      assertEq(_votingDelegateeV2[delegator], delegationReceiver);
+      assertEq(_votingDelegatee[delegator], delegationReceiver);
     } else {
-      assertEq(_propositionDelegateeV2[delegator], delegationReceiver);
+      assertEq(_propositionDelegatee[delegator], delegationReceiver);
     }
   }
 
@@ -164,5 +189,10 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     address holder
   ) internal returns (IATokenWithDelegation.DelegationState) {
     return _delegatedBalances[holder].delegationState;
+  }
+
+  function _mintAmount(address receiver) internal {
+    hoax(address(POOL));
+    this.mint(receiver, receiver, AMOUNT, INDEX);
   }
 }

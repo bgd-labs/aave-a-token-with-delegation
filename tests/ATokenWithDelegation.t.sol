@@ -8,6 +8,7 @@ import {DelegationBaseTest} from './DelegationBaseTest.sol';
 contract ATokenWithDelegationTest is DelegationBaseTest {
   address constant USER_1 = address(123);
   address constant USER_2 = address(1234);
+  address constant USER_3 = address(12345);
 
   // TEST _governancePowerTransferByType
   function testGovernancePowerTransferByTypeVoting()
@@ -78,7 +79,10 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
 
   function testGovernancePowerTransferByTypeWhenDelegationReceiverIsAddress0()
     public
-    validateNoChanges(address(0), IGovernancePowerDelegationToken.GovernancePowerType.VOTING)
+    validateNoChangesInDelegation(
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
   {
     uint104 impactOnDelegationBefore = uint104(1 ether);
     uint104 impactOnDelegationAfter = uint104(12 ether);
@@ -93,7 +97,10 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   function testGovernancePowerTransferByTypeWhenSameImpact()
     public
     mintAmount(USER_2)
-    validateNoChanges(USER_2, IGovernancePowerDelegationToken.GovernancePowerType.VOTING)
+    validateNoChangesInDelegation(
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
     validateUserTokenBalance(USER_2)
   {
     uint104 impactOnDelegationBefore = uint104(12 ether);
@@ -107,7 +114,50 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   }
 
   // TEST _transferWithDelegation
-  function testTransferWithDelegation() public {}
+  function testTransferWithDelegation()
+    public
+    mintAmount(USER_1)
+    mintAmount(USER_2)
+    prepareDelegationToReceiver(USER_1, USER_3)
+    //    validateDelegationReceiver(
+    //      USER_1,
+    //      USER_2,
+    //      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    //    )
+    //    validateDelegationReceiver(
+    //      USER_1,
+    //      USER_2,
+    //      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    //    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+    validateNoChangesInDelegationState(USER_1)
+    validateNoChangesInDelegationState(USER_2)
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+  {
+    _transferWithDelegation(USER_1, USER_2, AMOUNT);
+  }
+
+  function testTransferWithDelegationFromNot0AndBalanceGtAmount() public {}
+
+  function testTransferWithDelegationWhenFromEqTo() public {}
+
+  function testTransferWithDelegationWhenFromEq0() public {}
+
+  function testTransferWithDelegationWhenToEq0() public {}
+
+  function testTransferWithDelegationWhenFromNotDelegating() public {}
+
+  function testTransferWithDelegationWhenToNotDelegating() public {}
 
   // TEST _delegateByType
   function testDelegateTypeVotingPowerToUser()

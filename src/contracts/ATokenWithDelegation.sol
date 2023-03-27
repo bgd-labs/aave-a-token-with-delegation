@@ -13,8 +13,8 @@ import {IATokenWithDelegation} from '../interfaces/IATokenWithDelegation.sol';
         delegation balances. Balances amount is taken care of by AToken contract
  */
 contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IATokenWithDelegation {
-  mapping(address => address) internal _votingDelegateeV2;
-  mapping(address => address) internal _propositionDelegateeV2;
+  mapping(address => address) internal _votingDelegatee;
+  mapping(address => address) internal _propositionDelegatee;
 
   mapping(address => DelegationAwareBalance) internal _delegatedBalances;
 
@@ -300,12 +300,12 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
         /// With the & operation, we cover both VOTING_DELEGATED delegation and FULL_POWER_DELEGATED
         /// as VOTING_DELEGATED is equivalent to 01 in binary and FULL_POWER_DELEGATED is equivalent to 11
         (uint8(userDelegationState.delegationState) & uint8(DelegationState.VOTING_DELEGATED)) != 0
-          ? _votingDelegateeV2[delegator]
+          ? _votingDelegatee[delegator]
           : address(0);
     }
     return
       userDelegationState.delegationState >= DelegationState.PROPOSITION_DELEGATED
-        ? _propositionDelegateeV2[delegator]
+        ? _propositionDelegatee[delegator]
         : address(0);
   }
 
@@ -322,9 +322,9 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
   ) internal {
     address newDelegatee = _newDelegatee == delegator ? address(0) : _newDelegatee;
     if (delegationType == GovernancePowerType.VOTING) {
-      _votingDelegateeV2[delegator] = newDelegatee;
+      _votingDelegatee[delegator] = newDelegatee;
     } else {
-      _propositionDelegateeV2[delegator] = newDelegatee;
+      _propositionDelegatee[delegator] = newDelegatee;
     }
   }
 
