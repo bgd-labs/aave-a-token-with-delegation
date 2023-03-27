@@ -9,22 +9,19 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   address constant USER_1 = address(123);
   address constant USER_2 = address(1234);
 
+  // TEST _governancePowerTransferByType
   function testGovernancePowerTransferByTypeVoting()
     public
     mintAmount(USER_2)
     validateUserTokenBalance(USER_2)
   {
-    // TODO: not working
-    // adding some previous delegation
-    _delegatedBalances[USER_2].delegatedVotingBalance = uint72(20);
-
-    uint104 impactOnDelegationBefore = uint104(5 ether);
-    uint104 impactOnDelegationAfter = uint104(10 ether);
-
-    uint104 delegationVotingPowerBefore = _getDelegationBalanceByType(
+    uint72 delegationVotingPowerBefore = _getDelegationBalanceByType(
       USER_2,
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
+
+    uint104 impactOnDelegationBefore = uint104(0 ether);
+    uint104 impactOnDelegationAfter = uint104(10 ether);
 
     _governancePowerTransferByType(
       impactOnDelegationBefore,
@@ -33,15 +30,50 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
 
-    uint104 delegationVotingPowerAfter = _getDelegationBalanceByType(
+    uint72 delegationVotingPowerAfter = _getDelegationBalanceByType(
       USER_2,
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
 
-    uint72 impact = uint72(impactOnDelegationBefore / POWER_SCALE_FACTOR) +
-      uint72(impactOnDelegationAfter / POWER_SCALE_FACTOR);
+    assertEq(
+      delegationVotingPowerAfter,
+      delegationVotingPowerBefore -
+        uint72(impactOnDelegationBefore / POWER_SCALE_FACTOR) +
+        uint72(impactOnDelegationAfter / POWER_SCALE_FACTOR)
+    );
+  }
 
-    assertEq(delegationVotingPowerAfter, delegationVotingPowerBefore - impact);
+  function testGovernancePowerTransferByTypeProposition()
+    public
+    mintAmount(USER_2)
+    validateUserTokenBalance(USER_2)
+  {
+    uint72 delegationPropositionPowerBefore = _getDelegationBalanceByType(
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    uint104 impactOnDelegationBefore = uint104(0 ether);
+    uint104 impactOnDelegationAfter = uint104(10 ether);
+
+    _governancePowerTransferByType(
+      impactOnDelegationBefore,
+      impactOnDelegationAfter,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    uint72 delegationPropositionPowerAfter = _getDelegationBalanceByType(
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    assertEq(
+      delegationPropositionPowerAfter,
+      delegationPropositionPowerBefore -
+        uint72(impactOnDelegationBefore / POWER_SCALE_FACTOR) +
+        uint72(impactOnDelegationAfter / POWER_SCALE_FACTOR)
+    );
   }
 
   function testGovernancePowerTransferByTypeWhenDelegationReceiverIsAddress0()
@@ -74,6 +106,10 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     );
   }
 
+  // TEST _transferWithDelegation
+  function testTransferWithDelegation() public {}
+
+  // TEST _delegateByType
   function testDelegateTypeVotingPowerToUser()
     public
     mintAmount(USER_1)

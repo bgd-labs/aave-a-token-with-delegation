@@ -53,6 +53,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     assertEq(beforeDelegationActualBalanceOfDelegator, afterDelegationActualBalanceOfDelegator);
   }
 
+  // validates that the balance of delegator is now being delegated to recipient
   modifier validateDelegationPower(
     address delegator,
     address delegationRecipient,
@@ -89,6 +90,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     );
   }
 
+  // validates that delegator delegation state changes accordingly
   modifier validateDelegationState(
     address delegator,
     address delegationRecipient,

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {IGovernancePowerDelegationToken} from '../interfaces/IGovernancePowerDelegationToken.sol';
-import {AToken} from 'aave-v3-core/protocol/tokenization/AToken.sol';
+import {AToken} from './AToken.sol';
 import {IPool} from 'aave-v3-core/interfaces/IPool.sol';
 import {IATokenWithDelegation} from '../interfaces/IATokenWithDelegation.sol';
 
@@ -188,7 +188,7 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
   ) internal {
     if (delegatee == address(0)) return;
     if (impactOnDelegationBefore == impactOnDelegationAfter) return;
-    // TODO: dont fully get this method
+
     // To make delegated balance fit into uint72 we're decreasing precision of delegated balance by POWER_SCALE_FACTOR
     uint72 impactOnDelegationBefore72 = uint72(impactOnDelegationBefore / POWER_SCALE_FACTOR);
     uint72 impactOnDelegationAfter72 = uint72(impactOnDelegationAfter / POWER_SCALE_FACTOR);
