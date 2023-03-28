@@ -224,8 +224,10 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
    * @param amount The amount getting transferred
    */
   function _transfer(address from, address to, uint128 amount) internal virtual override {
+    // transfer delegation balances
+    _afterTokenTransfer(from, to, amount);
+
     _transfer(from, to, amount, true);
-    _transferWithDelegation(from, to, amount);
   }
 
   /**
@@ -255,5 +257,11 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
     IERC20(token).safeTransfer(to, amount);
   }
 
-  function _transferWithDelegation(address from, address to, uint256 amount) internal virtual {}
+  /**
+   * @dev after token transfer hook, added for delegation system
+   * @param from token sender
+   * @param to token recipient
+   * @param amount amount of tokens sent
+   **/
+  function _afterTokenTransfer(address from, address to, uint256 amount) internal virtual {}
 }

@@ -5,7 +5,8 @@ script = 'scripts'
 out = 'out'
 libs = ['lib']
 remappings = [
-  'aave-v3-core/=lib/aave-v3-core/contracts/'
+  'aave-v3-core/=lib/aave-v3-core/contracts/',
+  'aave-token-v3/=lib/aave-token-v3/src/'
 ]
 fs_permissions = [{access = "write", path = "./reports"}]
 

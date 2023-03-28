@@ -1,3 +1,6 @@
+aave-token-v2/=lib/aave-token-v3/lib/aave-token-v2/contracts/
+aave-token-v3/=lib/aave-token-v3/src/
 aave-v3-core/=lib/aave-v3-core/contracts/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
+openzeppelin-contracts/=lib/aave-token-v3/lib/openzeppelin-contracts/
