@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import '../src/interfaces/IGovernancePowerDelegationToken.sol';
+import '../src/contracts/interfaces/IGovernancePowerDelegationToken.sol';
 
 library PermitHelpers {
   struct Permit {

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IGovernancePowerDelegationToken} from '../interfaces/IGovernancePowerDelegationToken.sol';
+import {IGovernancePowerDelegationToken} from './interfaces/IGovernancePowerDelegationToken.sol';
+import {IATokenWithDelegation} from './interfaces/IATokenWithDelegation.sol';
 import {AToken} from './AToken.sol';
 import {IPool} from 'aave-v3-core/interfaces/IPool.sol';
-import {IATokenWithDelegation} from '../interfaces/IATokenWithDelegation.sol';
 
 /**
  * @author BGD Labs
