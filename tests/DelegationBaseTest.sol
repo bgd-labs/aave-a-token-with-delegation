@@ -46,6 +46,36 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     _;
   }
 
+  modifier prepareDelegationByTypeToReceiver(
+    address delegator,
+    address receiver,
+    IGovernancePowerDelegationToken.GovernancePowerType delegationType
+  ) {
+    // set up receiver delegation balances
+    if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
+      _delegatedBalances[delegator].delegationState = IATokenWithDelegation
+        .DelegationState
+        .VOTING_DELEGATED;
+
+      _delegatedBalances[receiver].delegatedVotingBalance = uint72(
+        _userState[delegator].balance / POWER_SCALE_FACTOR
+      );
+      _votingDelegatee[delegator] = receiver;
+    } else {
+      _delegatedBalances[delegator].delegationState = IATokenWithDelegation
+        .DelegationState
+        .PROPOSITION_DELEGATED;
+
+      _delegatedBalances[receiver].delegatedPropositionBalance = uint72(
+        _userState[delegator].balance / POWER_SCALE_FACTOR
+      );
+
+      _propositionDelegatee[delegator] = receiver;
+    }
+
+    _;
+  }
+
   modifier validateNoChangesInDelegation(address user) {
     address beforeVotingDelegatee = _votingDelegatee[user];
     address beforePropositionDelegatee = _propositionDelegatee[user];
@@ -132,6 +162,38 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     // ----------------------------- VALIDATIONS ----------------------------------------------
     // actual a token balance should not have changed
     assertEq(beforeDelegationActualBalanceOfDelegator, afterDelegationActualBalanceOfDelegator);
+  }
+
+  // check that delegation power of delegator has been removed from delegation recipient
+  modifier validateDelegationRemoved(
+    address delegator,
+    address delegationRecipient,
+    IGovernancePowerDelegationToken.GovernancePowerType delegationType
+  ) {
+    uint128 beforeDelegationActualBalanceOfDelegator = _getHolderActualBalance(delegator);
+    uint72 beforeDelegationPowerOfDelegator = _getDelegationBalanceByType(
+      delegator,
+      delegationType
+    );
+    uint72 beforeDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
+      delegationRecipient,
+      delegationType
+    );
+
+    _;
+
+    uint72 afterDelegationPowerOfDelegator = _getDelegationBalanceByType(delegator, delegationType);
+    uint72 afterDelegationPowerOfDelegationRecipient = _getDelegationBalanceByType(
+      delegationRecipient,
+      delegationType
+    );
+
+    assertEq(beforeDelegationPowerOfDelegator, afterDelegationPowerOfDelegator);
+    assertEq(
+      afterDelegationPowerOfDelegationRecipient,
+      beforeDelegationPowerOfDelegationRecipient -
+        uint72(beforeDelegationActualBalanceOfDelegator / POWER_SCALE_FACTOR)
+    );
   }
 
   // validates that the balance of delegator is now being delegated to recipient

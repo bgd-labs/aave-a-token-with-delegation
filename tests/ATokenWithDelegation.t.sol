@@ -12,7 +12,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   address constant USER_4 = address(123456);
 
   // TEST _governancePowerTransferByType
-  function testGovernancePowerTransferByTypeVoting()
+  function test_governancePowerTransferByTypeVoting()
     public
     mintAmount(USER_2)
     validateUserTokenBalance(USER_2)
@@ -45,7 +45,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     );
   }
 
-  function testGovernancePowerTransferByTypeProposition()
+  function test_governancePowerTransferByTypeProposition()
     public
     mintAmount(USER_2)
     validateUserTokenBalance(USER_2)
@@ -78,7 +78,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     );
   }
 
-  function testGovernancePowerTransferByTypeWhenDelegationReceiverIsAddress0()
+  function test_governancePowerTransferByTypeWhenDelegationReceiverIsAddress0()
     public
     validateNoChangesInDelegationBalanceByType(
       address(0),
@@ -95,7 +95,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     );
   }
 
-  function testGovernancePowerTransferByTypeWhenSameImpact()
+  function test_governancePowerTransferByTypeWhenSameImpact()
     public
     mintAmount(USER_2)
     validateNoChangesInDelegationBalanceByType(
@@ -115,7 +115,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   }
 
   // TEST _transferWithDelegation
-  function testTransferWithDelegation()
+  function test_transferWithDelegation()
     public
     mintAmount(USER_1)
     mintAmount(USER_2)
@@ -139,7 +139,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     _transferWithDelegation(USER_1, USER_2, AMOUNT);
   }
 
-  function testTransferWithDelegationFromNot0AndBalanceLtAmount()
+  function test_transferWithDelegationFromNot0AndBalanceLtAmount()
     public
     mintAmount(USER_1)
     validateUserTokenBalance(USER_1)
@@ -152,7 +152,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     _transferWithDelegation(USER_1, USER_2, amount);
   }
 
-  function testTransferWithDelegationWhenFromEqTo()
+  function test_transferWithDelegationWhenFromEqTo()
     public
     mintAmount(USER_1)
     validateUserTokenBalance(USER_1)
@@ -163,7 +163,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     _transferWithDelegation(USER_1, USER_1, AMOUNT);
   }
 
-  function testTransferWithDelegationWhenFromEq0()
+  function test_transferWithDelegationWhenFromEq0()
     public
     mintAmount(address(0))
     mintAmount(USER_1)
@@ -183,30 +183,312 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     _transferWithDelegation(address(0), USER_1, AMOUNT);
   }
 
-  function testTransferWithDelegationWhenToEq0()
+  function test_transferWithDelegationWhenToEq0()
     public
     mintAmount(USER_1)
     validateUserTokenBalance(USER_1)
-  //    validateDelegationPower(
-  //      USER_1,
-  //      address(0),
-  //      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
-  //    )
-  //    validateDelegationPower(
-  //      USER_1,
-  //      address(0),
-  //      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
-  //    )
+    validateUserTokenBalance(USER_2)
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateDelegationRemoved(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationRemoved(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
   {
     _transferWithDelegation(USER_1, address(0), AMOUNT);
   }
 
-  function testTransferWithDelegationWhenFromNotDelegating() public {}
+  // test that delegation does not chain
+  function test_transferWithDelegationWhenFromNotDelegating()
+    public
+    mintAmount(USER_1)
+    mintAmount(USER_2)
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+    prepareDelegationToReceiver(USER_2, USER_3)
+    validateDelegationPower(
+      USER_1,
+      USER_3,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationPower(
+      USER_1,
+      USER_3,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+  {
+    _transferWithDelegation(USER_1, USER_2, AMOUNT);
+  }
 
-  function testTransferWithDelegationWhenToNotDelegating() public {}
+  function test_transferWithDelegationWhenToNotDelegating()
+    public
+    mintAmount(USER_1)
+    mintAmount(USER_2)
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+    validateNoChangesInDelegation(USER_2)
+    prepareDelegationToReceiver(USER_1, USER_3)
+    validateDelegationRemoved(
+      USER_1,
+      USER_3,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationRemoved(
+      USER_1,
+      USER_3,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+  {
+    _transferWithDelegation(USER_1, USER_2, AMOUNT);
+  }
+
+  // TEST _getDelegatedPowerByType
+  function test_getDelegatedPowerByType()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+  {
+    uint256 delegatedVotingPower = _getDelegatedPowerByType(
+      _delegatedBalances[USER_2],
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    uint256 delegatedPropositionPower = _getDelegatedPowerByType(
+      _delegatedBalances[USER_2],
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    assertEq(delegatedVotingPower, uint256(_userState[USER_1].balance));
+    assertEq(delegatedPropositionPower, uint256(_userState[USER_1].balance));
+  }
+
+  // TEST _getDelegateeByType
+  function test_getDelegateeByType()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+  {
+    address votingDelegatee = _getDelegateeByType(
+      USER_1,
+      _delegatedBalances[USER_1],
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    address propositionDelegatee = _getDelegateeByType(
+      USER_1,
+      _delegatedBalances[USER_1],
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+
+    assertEq(votingDelegatee, USER_2);
+    assertEq(propositionDelegatee, USER_2);
+  }
+
+  // TEST _updateDelegateeByType
+  function test_updateDelegateeByTypeVoting()
+    public
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationReceiver(
+      USER_1,
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+  {
+    _updateDelegateeByType(
+      USER_1,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+      USER_2
+    );
+  }
+
+  function test_updateDelegateeByTypeProposition()
+    public
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationReceiver(
+      USER_1,
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+  {
+    _updateDelegateeByType(
+      USER_1,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
+      USER_2
+    );
+  }
+
+  // TEST _updateDelegationFlagByType
+  function test_updateDelegationFlagByTypeVotingFromNoDelegation()
+    public
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+        true
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.VOTING_DELEGATED)
+    );
+  }
+
+  function test_updateDelegationFlagByTypePropositionFromNoDelegation()
+    public
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
+        true
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.PROPOSITION_DELEGATED)
+    );
+  }
+
+  function test_updateDelegationFlagByTypeVotingFromPropositionDelegation()
+    public
+    prepareDelegationByTypeToReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+        true
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.FULL_POWER_DELEGATED)
+    );
+  }
+
+  function test_updateDelegationFlagByTypePropositionFromVotingDelegation()
+    public
+    prepareDelegationByTypeToReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
+        true
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.FULL_POWER_DELEGATED)
+    );
+  }
+
+  function test_updateDelegationFlagByTypeRemoveVotingFromVoting()
+    public
+    prepareDelegationByTypeToReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+        false
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.NO_DELEGATION)
+    );
+  }
+
+  function test_updateDelegationFlagByTypeRemovePropositionFromProposition()
+    public
+    prepareDelegationByTypeToReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
+        false
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.NO_DELEGATION)
+    );
+  }
+
+  function test_updateDelegationFlagByTypeRemoveVotingFromFullDelegation()
+    public
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+        false
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.PROPOSITION_DELEGATED)
+    );
+  }
+
+  function test_updateDelegationFlagByTypeRemovePropositionFromFullDelegation()
+    public
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateNoChangesInDelegation(USER_1)
+  {
+    IATokenWithDelegation.DelegationAwareBalance
+      memory delegationBalance = _updateDelegationFlagByType(
+        _delegatedBalances[USER_1],
+        IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
+        false
+      );
+
+    assertEq(
+      uint8(delegationBalance.delegationState),
+      uint8(IATokenWithDelegation.DelegationState.VOTING_DELEGATED)
+    );
+  }
 
   // TEST _delegateByType
-  function testDelegateTypeVotingPowerToUser()
+  function test_delegateByTypeVoting()
     public
     mintAmount(USER_1)
     validateDelegationPower(
@@ -223,6 +505,87 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateUserTokenBalance(USER_1)
     validateUserTokenBalance(USER_2)
   {
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
     _delegateByType(USER_1, USER_2, IGovernancePowerDelegationToken.GovernancePowerType.VOTING);
+  }
+
+  function test_delegateByTypeProposition()
+    public
+    mintAmount(USER_1)
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationState(USER_1, USER_2, DelegationType.PROPOSITION)
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    _delegateByType(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+  }
+
+  function test_delegateByTypeToCurrentDelegatee()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateNoChangesInDelegation(USER_1)
+    validateNoChangesInDelegation(USER_2)
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    _delegateByType(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+  }
+
+  function test_delegateByTypeToSelf()
+    public
+    mintAmount(USER_1)
+    prepareDelegationByTypeToReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationRemoved(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    _delegateByType(
+      USER_1,
+      USER_1,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
   }
 }
