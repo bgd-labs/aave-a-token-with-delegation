@@ -11,6 +11,10 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   address constant USER_3 = address(12345);
   address constant USER_4 = address(123456);
 
+  // ----------------------------------------------------------------------------------------------
+  //                       INTERNAL METHODS
+  // ----------------------------------------------------------------------------------------------
+
   // TEST _governancePowerTransferByType
   function test_governancePowerTransferByTypeVoting()
     public
@@ -280,7 +284,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     address propositionDelegatee = _getDelegateeByType(
       USER_1,
       _delegatedBalances[USER_1],
-      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
 
     assertEq(votingDelegatee, USER_2);
@@ -586,6 +590,270 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
       USER_1,
       USER_1,
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+  }
+
+  // ----------------------------------------------------------------------------------------------
+  //                       EXTERNAL METHODS
+  // ----------------------------------------------------------------------------------------------
+  // TEST delegateByType
+  function testDelegateByTypeVoting()
+    public
+    mintAmount(USER_1)
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationState(USER_1, USER_2, DelegationType.VOTING)
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    this.delegateByType(USER_2, IGovernancePowerDelegationToken.GovernancePowerType.VOTING);
+  }
+
+  function testDelegateByTypeProposition()
+    public
+    mintAmount(USER_1)
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationState(USER_1, USER_2, DelegationType.PROPOSITION)
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    this.delegateByType(USER_2, IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION);
+  }
+
+  function testDelegateByTypeToCurrentDelegatee()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateNoChangesInDelegation(USER_1)
+    validateNoChangesInDelegation(USER_2)
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    this.delegateByType(USER_2, IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION);
+  }
+
+  function testDelegateByTypeToSelf()
+    public
+    mintAmount(USER_1)
+    prepareDelegationByTypeToReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationRemoved(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    this.delegateByType(USER_1, IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION);
+  }
+
+  // TEST delegate
+  function testDelegate()
+    public
+    mintAmount(USER_1)
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationPower(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationState(USER_1, USER_2, DelegationType.FULL_POWER)
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationReceiver(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+    this.delegate(USER_2);
+  }
+
+  function testDelegateToCurrentDelegatee()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateNoChangesInDelegation(USER_1)
+    validateNoChangesInDelegation(USER_2)
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    this.delegate(USER_2);
+  }
+
+  function testDelegateToSelf()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+    validateDelegationRemoved(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationRemoved(
+      USER_1,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateUserTokenBalance(USER_1)
+    validateUserTokenBalance(USER_2)
+  {
+    hoax(USER_1);
+    vm.expectEmit(true, true, false, true);
+    emit DelegateChanged(
+      USER_1,
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    emit DelegateChanged(
+      USER_1,
+      address(0),
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    this.delegate(USER_1);
+  }
+
+  // TEST getDelegateeByType
+  function testGetDelegateeByType()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+  {
+    address votingDelegatee = this.getDelegateeByType(
+      USER_1,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+    address propositionDelegatee = this.getDelegateeByType(
+      USER_1,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    assertEq(votingDelegatee, USER_2);
+    assertEq(propositionDelegatee, USER_2);
+  }
+
+  // TEST getDelegates
+  function testGetDelegates()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+  {
+    (address votingDelegatee, address propositionDelegatee) = this.getDelegates(USER_1);
+
+    assertEq(votingDelegatee, USER_2);
+    assertEq(propositionDelegatee, USER_2);
+  }
+
+  // TEST getPowerCurrent
+  function testGetPowerCurrent()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+  {
+    uint256 votingPower = this.getPowerCurrent(
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    );
+
+    uint256 propositionPower = this.getPowerCurrent(
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    );
+
+    assertEq(
+      votingPower,
+      uint256(_delegatedBalances[USER_2].delegatedVotingBalance * POWER_SCALE_FACTOR)
+    );
+
+    assertEq(
+      propositionPower,
+      uint256(_delegatedBalances[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
+    );
+  }
+
+  // TEST getPowersCurrent
+  function testGetPowersCurrent()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_2)
+  {
+    (uint256 votingPower, uint256 propositionPower) = this.getPowersCurrent(USER_2);
+
+    assertEq(
+      votingPower,
+      uint256(_delegatedBalances[USER_2].delegatedVotingBalance * POWER_SCALE_FACTOR)
+    );
+
+    assertEq(
+      propositionPower,
+      uint256(_delegatedBalances[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
     );
   }
 }
