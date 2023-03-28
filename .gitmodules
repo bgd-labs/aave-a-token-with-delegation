@@ -5,3 +5,6 @@
 	path = lib/aave-v3-core
 	url = https://github.com/aave/aave-v3-core
 	branch = v1.17.2
+[submodule "lib/aave-token-v3"]
+	path = lib/aave-token-v3
+	url = https://github.com/bgd-labs/aave-token-v3
