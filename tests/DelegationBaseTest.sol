@@ -284,14 +284,14 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     }
   }
 
-  function _getHolderActualBalance(address holder) internal returns (uint128) {
+  function _getHolderActualBalance(address holder) internal view returns (uint128) {
     return _userState[holder].balance;
   }
 
   function _getDelegationBalanceByType(
     address holder,
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
-  ) internal returns (uint72) {
+  ) internal view returns (uint72) {
     if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
       return _delegatedBalances[holder].delegatedVotingBalance;
     } else {
@@ -301,7 +301,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
 
   function _getDelegationState(
     address holder
-  ) internal returns (IATokenWithDelegation.DelegationState) {
+  ) internal view returns (IATokenWithDelegation.DelegationState) {
     return _delegatedBalances[holder].delegationState;
   }
 

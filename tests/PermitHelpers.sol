@@ -31,7 +31,7 @@ library PermitHelpers {
     Permit memory _permit,
     bytes32 domainSeparator,
     bytes32 permitTypeHash
-  ) public view returns (bytes32) {
+  ) public pure returns (bytes32) {
     return
       keccak256(
         abi.encodePacked(
@@ -56,7 +56,7 @@ library PermitHelpers {
     DelegateByType memory _delegateByType,
     bytes32 domainSeparator,
     bytes32 delegateByTypeHash
-  ) public view returns (bytes32) {
+  ) public pure returns (bytes32) {
     return
       keccak256(
         abi.encodePacked(
@@ -81,7 +81,7 @@ library PermitHelpers {
     Delegate memory _delegate,
     bytes32 domainSeparator,
     bytes32 delegateTypeHash
-  ) public view returns (bytes32) {
+  ) public pure returns (bytes32) {
     return
       keccak256(
         abi.encodePacked(
