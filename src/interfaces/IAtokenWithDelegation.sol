@@ -21,6 +21,4 @@ interface IATokenWithDelegation {
   function DELEGATE_BY_TYPE_TYPEHASH() external view returns (bytes32);
 
   function DELEGATE_TYPEHASH() external view returns (bytes32);
-
-  function DELEGATE_DOMAIN_SEPARATOR() external view returns (bytes32);
 }

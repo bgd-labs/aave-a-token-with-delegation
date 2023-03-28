@@ -4,12 +4,20 @@ pragma solidity ^0.8.0;
 import 'forge-std/Test.sol';
 import {ATokenWithDelegation, IATokenWithDelegation, IGovernancePowerDelegationToken} from '../src/contracts/ATokenWithDelegation.sol';
 import {DelegationBaseTest} from './DelegationBaseTest.sol';
+import {PermitHelpers} from './PermitHelpers.sol';
 
 contract ATokenWithDelegationTest is DelegationBaseTest {
   address constant USER_1 = address(123);
   address constant USER_2 = address(1234);
   address constant USER_3 = address(12345);
   address constant USER_4 = address(123456);
+
+  uint256 constant PRIVATE_KEY = 0xB26ECB;
+  address delegator;
+
+  function setUp() public {
+    delegator = vm.addr(PRIVATE_KEY);
+  }
 
   // ----------------------------------------------------------------------------------------------
   //                       INTERNAL METHODS
@@ -854,6 +862,145 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     assertEq(
       propositionPower,
       uint256(_delegatedBalances[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
+    );
+  }
+
+  // ----------------------------------------------------------------------------------------------
+  //                       META METHODS
+  // ----------------------------------------------------------------------------------------------
+
+  // TEST permit
+  function testPermit() public {
+    uint256 privateKey = 0xB26ECB;
+    address owner = vm.addr(privateKey);
+    address spender = address(5);
+    uint256 amountToPermit = 1000 ether;
+    uint256 nonceBefore = nonces(owner);
+
+    PermitHelpers.Permit memory permitParams = PermitHelpers.Permit({
+      owner: owner,
+      spender: spender,
+      value: amountToPermit,
+      nonce: nonces(owner),
+      deadline: type(uint256).max
+    });
+
+    bytes32 digest = PermitHelpers.getPermitTypedDataHash(
+      permitParams,
+      DOMAIN_SEPARATOR(),
+      PERMIT_TYPEHASH
+    );
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, digest);
+
+    this.permit(
+      permitParams.owner,
+      permitParams.spender,
+      permitParams.value,
+      permitParams.deadline,
+      v,
+      r,
+      s
+    );
+
+    uint256 nonceAfter = nonces(owner);
+    uint256 allowance = this.allowance(owner, spender);
+    assertEq(allowance, amountToPermit);
+    assertEq(nonceBefore + 1, nonceAfter);
+  }
+
+  // TEST metaDelegateByType
+  function testMetaDelegateByType()
+    public
+    mintAmount(delegator)
+    validateDelegationPower(
+      delegator,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationState(delegator, USER_2, DelegationType.VOTING)
+    validateDelegationReceiver(
+      delegator,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateUserTokenBalance(delegator)
+    validateUserTokenBalance(USER_2)
+  {
+    PermitHelpers.DelegateByType memory delegateByTypeParams = PermitHelpers.DelegateByType({
+      delegator: delegator,
+      delegatee: USER_2,
+      delegationType: IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+      nonce: nonces(delegator),
+      deadline: type(uint256).max
+    });
+
+    bytes32 digest = PermitHelpers.getMetaDelegateByTypedDataHash(
+      delegateByTypeParams,
+      DOMAIN_SEPARATOR(),
+      DELEGATE_BY_TYPE_TYPEHASH
+    );
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(PRIVATE_KEY, digest);
+
+    this.metaDelegateByType(
+      delegateByTypeParams.delegator,
+      delegateByTypeParams.delegatee,
+      delegateByTypeParams.delegationType,
+      delegateByTypeParams.deadline,
+      v,
+      r,
+      s
+    );
+  }
+
+  // TEST metaDelegate
+  function testMetaDelegate()
+    public
+    mintAmount(delegator)
+    validateDelegationPower(
+      delegator,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationPower(
+      delegator,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateDelegationState(delegator, USER_2, DelegationType.FULL_POWER)
+    validateDelegationReceiver(
+      delegator,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationReceiver(
+      delegator,
+      USER_2,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+    validateUserTokenBalance(delegator)
+    validateUserTokenBalance(USER_2)
+  {
+    PermitHelpers.Delegate memory delegateByTypeParams = PermitHelpers.Delegate({
+      delegator: delegator,
+      delegatee: USER_2,
+      nonce: nonces(delegator),
+      deadline: type(uint256).max
+    });
+
+    bytes32 digest = PermitHelpers.getMetaDelegateDataHash(
+      delegateByTypeParams,
+      DOMAIN_SEPARATOR(),
+      DELEGATE_TYPEHASH
+    );
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(PRIVATE_KEY, digest);
+
+    this.metaDelegate(
+      delegateByTypeParams.delegator,
+      delegateByTypeParams.delegatee,
+      delegateByTypeParams.deadline,
+      v,
+      r,
+      s
     );
   }
 }

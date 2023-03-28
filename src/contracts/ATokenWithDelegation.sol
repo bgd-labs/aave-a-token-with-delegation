@@ -29,19 +29,7 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
   bytes32 public constant DELEGATE_TYPEHASH =
     keccak256('Delegate(address delegator,address delegatee,uint256 nonce,uint256 deadline)');
 
-  bytes32 public DELEGATE_DOMAIN_SEPARATOR;
-
-  constructor(IPool pool) AToken(pool) {
-    DELEGATE_DOMAIN_SEPARATOR = keccak256(
-      abi.encode(
-        EIP712_DOMAIN,
-        keccak256(bytes(name())),
-        keccak256(EIP712_REVISION),
-        _chainId,
-        address(this)
-      )
-    );
-  }
+  constructor(IPool pool) AToken(pool) {}
 
   /// @inheritdoc IGovernancePowerDelegationToken
   function delegateByType(
@@ -114,7 +102,7 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
     bytes32 digest = keccak256(
       abi.encodePacked(
         '\x19\x01',
-        DELEGATE_DOMAIN_SEPARATOR,
+        DOMAIN_SEPARATOR(),
         keccak256(
           abi.encode(
             DELEGATE_BY_TYPE_TYPEHASH,
@@ -152,7 +140,7 @@ contract ATokenWithDelegation is AToken, IGovernancePowerDelegationToken, IAToke
     bytes32 digest = keccak256(
       abi.encodePacked(
         '\x19\x01',
-        DELEGATE_DOMAIN_SEPARATOR,
+        DOMAIN_SEPARATOR(),
         keccak256(abi.encode(DELEGATE_TYPEHASH, delegator, delegatee, currentValidNonce, deadline))
       )
     );
