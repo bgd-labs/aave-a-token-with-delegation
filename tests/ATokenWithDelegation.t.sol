@@ -37,8 +37,8 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
 
-    uint104 impactOnDelegationBefore = uint104(0 ether);
-    uint104 impactOnDelegationAfter = uint104(10 ether);
+    uint256 impactOnDelegationBefore = 0 ether;
+    uint256 impactOnDelegationAfter = 10 ether;
 
     _governancePowerTransferByType(
       impactOnDelegationBefore,
@@ -70,8 +70,8 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
 
-    uint104 impactOnDelegationBefore = uint104(0 ether);
-    uint104 impactOnDelegationAfter = uint104(10 ether);
+    uint256 impactOnDelegationBefore = 0 ether;
+    uint256 impactOnDelegationAfter = 10 ether;
 
     _governancePowerTransferByType(
       impactOnDelegationBefore,
@@ -100,8 +100,8 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     )
   {
-    uint104 impactOnDelegationBefore = uint104(1 ether);
-    uint104 impactOnDelegationAfter = uint104(12 ether);
+    uint256 impactOnDelegationBefore = 1 ether;
+    uint256 impactOnDelegationAfter = 12 ether;
     _governancePowerTransferByType(
       impactOnDelegationBefore,
       impactOnDelegationAfter,
@@ -119,8 +119,8 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     )
     validateUserTokenBalance(USER_2)
   {
-    uint104 impactOnDelegationBefore = uint104(12 ether);
-    uint104 impactOnDelegationAfter = uint104(12 ether);
+    uint256 impactOnDelegationBefore = 12 ether;
+    uint256 impactOnDelegationAfter = 12 ether;
     _governancePowerTransferByType(
       impactOnDelegationBefore,
       impactOnDelegationAfter,

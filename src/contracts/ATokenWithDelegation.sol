@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {AToken} from './AToken.sol';
-import {IPool} from 'aave-v3-core/interfaces/IPool.sol';
+import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
 
 /**

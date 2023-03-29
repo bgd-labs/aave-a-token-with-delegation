@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.10;
 
-import {VersionedInitializable} from 'aave-v3-core/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
-import {Errors} from 'aave-v3-core/protocol/libraries/helpers/Errors.sol';
-import {WadRayMath} from 'aave-v3-core/protocol/libraries/math/WadRayMath.sol';
-import {ScaledBalanceTokenBase} from 'aave-v3-core/protocol/tokenization/base/ScaledBalanceTokenBase.sol';
-import {EIP712Base} from 'aave-v3-core/protocol/tokenization/base/EIP712Base.sol';
-import {IncentivizedERC20} from 'aave-v3-core/protocol/tokenization/base/IncentivizedERC20.sol';
-import {IAToken} from 'aave-v3-core/interfaces/IAToken.sol';
-import {IPool} from 'aave-v3-core/interfaces/IPool.sol';
-import {IAaveIncentivesController} from 'aave-v3-core/interfaces/IAaveIncentivesController.sol';
-import {IInitializableAToken} from 'aave-v3-core/interfaces/IInitializableAToken.sol';
-import {GPv2SafeERC20} from 'aave-v3-core/dependencies/gnosis/contracts/GPv2SafeERC20.sol';
-import {IERC20} from 'aave-v3-core/dependencies/openzeppelin/contracts/IERC20.sol';
-import {SafeCast} from 'aave-v3-core/dependencies/openzeppelin/contracts/SafeCast.sol';
+import {VersionedInitializable} from 'aave-v3-core/contracts/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
+import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
+import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
+import {ScaledBalanceTokenBase} from 'aave-v3-core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol';
+import {EIP712Base} from 'aave-v3-core/contracts/protocol/tokenization/base/EIP712Base.sol';
+import {IncentivizedERC20} from 'aave-v3-core/contracts/protocol/tokenization/base/IncentivizedERC20.sol';
+import {IAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
+import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
+import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
+import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IInitializableAToken.sol';
+import {GPv2SafeERC20} from 'aave-v3-core/contracts/dependencies/gnosis/contracts/GPv2SafeERC20.sol';
+import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+import {SafeCast} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol';
 
 /**
  * @title Aave ERC20 AToken
