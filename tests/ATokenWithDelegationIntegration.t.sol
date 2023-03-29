@@ -2,15 +2,11 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {IPool, ATokenWithDelegation} from '../src/contracts/ATokenWithDelegation.sol';
+import {ATokenWithDelegation} from '../src/contracts/ATokenWithDelegation.sol';
 import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGovernancePowerDelegationToken.sol';
 import {AaveGovernanceV2} from 'aave-address-book/AaveGovernanceV2.sol';
-import {AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
-import {IBaseAdminUpgradeabilityProxy} from './IBaseAdminUpgradeabilityProxy.sol';
-
-contract PoolMock {
-  address public constant ADDRESSES_PROVIDER = address(12351);
-}
+import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
+import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 
 contract ATokenWithDelegationIntegrationTest is Test {
   address constant USER_1 = address(123);
@@ -20,22 +16,20 @@ contract ATokenWithDelegationIntegrationTest is Test {
   uint256 constant AMOUNT = 100 ether;
 
   ATokenWithDelegation aToken;
-  address pool;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl('mainnet'), 16931880);
 
-    pool = address(new PoolMock());
-    ATokenWithDelegation aTokenImpl = new ATokenWithDelegation(IPool(pool));
+    ATokenWithDelegation aTokenImpl = new ATokenWithDelegation(AaveV3Ethereum.POOL);
 
-    vm.prank(AaveGovernanceV2.SHORT_EXECUTOR);
-    IBaseAdminUpgradeabilityProxy(address(AaveV3EthereumAssets.AAVE_A_TOKEN)).upgradeTo(
+    hoax(address(AaveV3Ethereum.POOL_CONFIGURATOR));
+    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN))).upgradeTo(
       address(aTokenImpl)
     );
   }
 
   function testMintDoesNotGiveDelegation() public {
-    hoax(pool);
+    hoax(address(AaveV3Ethereum.POOL));
     aToken.mint(USER_1, USER_1, AMOUNT, INDEX);
 
     (uint256 votingPower, uint256 propositionPower) = aToken.getPowersCurrent(USER_1);
