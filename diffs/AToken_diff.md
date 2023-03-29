@@ -1,6 +1,6 @@
 ```diff
 diff --git a/./etherscan/AToken/@aave/core-v3/contracts/protocol/tokenization/AToken.sol b/./src/contracts/AToken.sol
-index 4abfb1d..d84245c 100644
+index 57f3b16..d84245c 100644
 --- a/./etherscan/AToken/@aave/core-v3/contracts/protocol/tokenization/AToken.sol
 +++ b/./src/contracts/AToken.sol
 @@ -1,19 +1,19 @@
@@ -36,77 +36,17 @@ index 4abfb1d..d84245c 100644
  
  /**
   * @title Aave ERC20 AToken
-@@ -42,10 +42,9 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-    * @dev Constructor.
-    * @param pool The address of the Pool contract
-    */
--  constructor(IPool pool)
--    ScaledBalanceTokenBase(pool, 'ATOKEN_IMPL', 'ATOKEN_IMPL', 0)
--    EIP712Base()
--  {
-+  constructor(
-+    IPool pool
-+  ) ScaledBalanceTokenBase(pool, 'ATOKEN_IMPL', 'ATOKEN_IMPL', 0) EIP712Base() {
-     // Intentionally left blank
-   }
- 
-@@ -126,13 +125,9 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-   }
- 
-   /// @inheritdoc IERC20
--  function balanceOf(address user)
--    public
--    view
--    virtual
--    override(IncentivizedERC20, IERC20)
--    returns (uint256)
--  {
-+  function balanceOf(
-+    address user
-+  ) public view virtual override(IncentivizedERC20, IERC20) returns (uint256) {
-     return super.balanceOf(user).rayMul(POOL.getReserveNormalizedIncome(_underlyingAsset));
-   }
- 
-@@ -205,12 +200,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-    * @param amount The amount getting transferred
-    * @param validate True if the transfer needs to be validated, false otherwise
-    */
--  function _transfer(
--    address from,
--    address to,
--    uint256 amount,
--    bool validate
--  ) internal virtual {
-+  function _transfer(address from, address to, uint256 amount, bool validate) internal virtual {
-     address underlyingAsset = _underlyingAsset;
- 
-     uint256 index = POOL.getReserveNormalizedIncome(underlyingAsset);
-@@ -233,11 +223,10 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-    * @param to The destination address
+@@ -224,6 +224,9 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
     * @param amount The amount getting transferred
     */
--  function _transfer(
--    address from,
--    address to,
--    uint128 amount
--  ) internal virtual override {
-+  function _transfer(address from, address to, uint128 amount) internal virtual override {
+   function _transfer(address from, address to, uint128 amount) internal virtual override {
 +    // transfer delegation balances
 +    _afterTokenTransfer(from, to, amount);
 +
      _transfer(from, to, amount, true);
    }
  
-@@ -263,12 +252,16 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-   }
- 
-   /// @inheritdoc IAToken
--  function rescueTokens(
--    address token,
--    address to,
--    uint256 amount
--  ) external override onlyPoolAdmin {
-+  function rescueTokens(address token, address to, uint256 amount) external override onlyPoolAdmin {
+@@ -253,4 +256,12 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
      require(token != _underlyingAsset, Errors.UNDERLYING_CANNOT_BE_RESCUED);
      IERC20(token).safeTransfer(to, amount);
    }
