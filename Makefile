@@ -17,6 +17,6 @@ git-diff :
 
 
 storage-diff :
-	forge inspect lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol:AToken storage-layout  > reports/AToken_layout.md
-	forge inspect src/contracts/ATokenWithDelegation.sol:ATokenWithDelegation storage-layout  > reports/ATokenWithDelegation_layout.md
+	forge inspect lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol:AToken storage-layout --pretty  > reports/AToken_layout.md
+	forge inspect src/contracts/ATokenWithDelegation.sol:ATokenWithDelegation storage-layout --pretty > reports/ATokenWithDelegation_layout.md
 	make git-diff before=reports/AToken_layout.md after=reports/ATokenWithDelegation_layout.md out=AToken_WithDelegation_layout_diff

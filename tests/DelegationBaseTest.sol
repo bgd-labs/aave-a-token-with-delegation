@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import 'forge-std/Test.sol';
 import {IPool, ATokenWithDelegation} from '../src/contracts/ATokenWithDelegation.sol';
 import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGovernancePowerDelegationToken.sol';
-import {DelegationState} from 'aave-token-v3/DelegationAwareBalance.sol';
+import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
 
 contract PoolMock {
   address public constant ADDRESSES_PROVIDER = address(12351);
@@ -30,13 +30,13 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   // prepare a state where delegator is delegating full power to receiver
   modifier prepareDelegationToReceiver(address delegator, address receiver) {
     // set up delegator delegation balances
-    _delegatedBalances[delegator].delegationState = DelegationState.FULL_POWER_DELEGATED;
+    _delegatedState[delegator].delegationMode = DelegationMode.FULL_POWER_DELEGATED;
 
     // set up receiver delegation balances
-    _delegatedBalances[receiver].delegatedVotingBalance = uint72(
+    _delegatedState[receiver].delegatedVotingBalance = uint72(
       _userState[delegator].balance / POWER_SCALE_FACTOR
     );
-    _delegatedBalances[receiver].delegatedPropositionBalance = uint72(
+    _delegatedState[receiver].delegatedPropositionBalance = uint72(
       _userState[delegator].balance / POWER_SCALE_FACTOR
     );
 
@@ -53,16 +53,16 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   ) {
     // set up receiver delegation balances
     if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
-      _delegatedBalances[delegator].delegationState = DelegationState.VOTING_DELEGATED;
+      _delegatedState[delegator].delegationMode = DelegationMode.VOTING_DELEGATED;
 
-      _delegatedBalances[receiver].delegatedVotingBalance = uint72(
+      _delegatedState[receiver].delegatedVotingBalance = uint72(
         _userState[delegator].balance / POWER_SCALE_FACTOR
       );
       _votingDelegatee[delegator] = receiver;
     } else {
-      _delegatedBalances[delegator].delegationState = DelegationState.PROPOSITION_DELEGATED;
+      _delegatedState[delegator].delegationMode = DelegationMode.PROPOSITION_DELEGATED;
 
-      _delegatedBalances[receiver].delegatedPropositionBalance = uint72(
+      _delegatedState[receiver].delegatedPropositionBalance = uint72(
         _userState[delegator].balance / POWER_SCALE_FACTOR
       );
 
@@ -83,7 +83,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       user,
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
-    DelegationState delegationStateBefore = _delegatedBalances[user].delegationState;
+    DelegationMode delegationStateBefore = _delegatedState[user].delegationMode;
 
     _;
 
@@ -97,7 +97,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       user,
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
-    DelegationState delegationStateAfter = _delegatedBalances[user].delegationState;
+    DelegationMode delegationStateAfter = _delegatedState[user].delegationMode;
 
     assertEq(beforeVotingDelegatee, afterVotingDelegatee);
     assertEq(beforePropositionDelegatee, afterPropositionDelegatee);
@@ -138,9 +138,9 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   }
 
   modifier validateNoChangesInDelegationState(address user) {
-    DelegationState delegationStateBefore = _delegatedBalances[user].delegationState;
+    DelegationMode delegationStateBefore = _delegatedState[user].delegationMode;
     _;
-    DelegationState delegationStateAfter = _delegatedBalances[user].delegationState;
+    DelegationMode delegationStateAfter = _delegatedState[user].delegationMode;
 
     assertEq(uint8(delegationStateBefore), uint8(delegationStateAfter));
   }
@@ -227,27 +227,24 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     address delegationRecipient,
     DelegationType delegationType
   ) {
-    DelegationState beforeDelegationStateOfDelegationRecipient = _getDelegationState(
+    DelegationMode beforeDelegationStateOfDelegationRecipient = _getDelegationMode(
       delegationRecipient
     );
 
     _;
 
-    DelegationState afterDelegationStateOfDelegator = _getDelegationState(delegator);
-    DelegationState afterDelegationStateOfDelegationRecipient = _getDelegationState(
+    DelegationMode afterDelegationStateOfDelegator = _getDelegationMode(delegator);
+    DelegationMode afterDelegationStateOfDelegationRecipient = _getDelegationMode(
       delegationRecipient
     );
 
     // ----------------------------- VALIDATIONS ----------------------------------------------
     if (delegationType == DelegationType.FULL_POWER) {
-      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationState.FULL_POWER_DELEGATED));
+      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationMode.FULL_POWER_DELEGATED));
     } else if (delegationType == DelegationType.VOTING) {
-      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationState.VOTING_DELEGATED));
+      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationMode.VOTING_DELEGATED));
     } else {
-      assertEq(
-        uint8(afterDelegationStateOfDelegator),
-        uint8(DelegationState.PROPOSITION_DELEGATED)
-      );
+      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationMode.PROPOSITION_DELEGATED));
     }
     assertEq(
       uint8(beforeDelegationStateOfDelegationRecipient),
@@ -277,14 +274,14 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     IGovernancePowerDelegationToken.GovernancePowerType delegationType
   ) internal view returns (uint72) {
     if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
-      return _delegatedBalances[holder].delegatedVotingBalance;
+      return _delegatedState[holder].delegatedVotingBalance;
     } else {
-      return _delegatedBalances[holder].delegatedPropositionBalance;
+      return _delegatedState[holder].delegatedPropositionBalance;
     }
   }
 
-  function _getDelegationState(address holder) internal view returns (DelegationState) {
-    return _delegatedBalances[holder].delegationState;
+  function _getDelegationMode(address holder) internal view returns (DelegationMode) {
+    return _delegatedState[holder].delegationMode;
   }
 
   function _mintAmount(address receiver) internal {

@@ -5,7 +5,7 @@ import 'forge-std/Test.sol';
 import {ATokenWithDelegation} from '../src/contracts/ATokenWithDelegation.sol';
 import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGovernancePowerDelegationToken.sol';
 
-import {DelegationState} from 'aave-token-v3/DelegationAwareBalance.sol';
+import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
 import {DelegationBaseTest} from './DelegationBaseTest.sol';
 import {PermitHelpers} from './PermitHelpers.sol';
 
@@ -268,11 +268,11 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     prepareDelegationToReceiver(USER_1, USER_2)
   {
     uint256 delegatedVotingPower = _getDelegatedPowerByType(
-      _delegatedBalances[USER_2],
+      _delegatedState[USER_2],
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
     uint256 delegatedPropositionPower = _getDelegatedPowerByType(
-      _delegatedBalances[USER_2],
+      _delegatedState[USER_2],
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
 
@@ -288,12 +288,12 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   {
     address votingDelegatee = _getDelegateeByType(
       USER_1,
-      _delegatedBalances[USER_1],
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
     address propositionDelegatee = _getDelegateeByType(
       USER_1,
-      _delegatedBalances[USER_1],
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
 
@@ -342,34 +342,31 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     );
   }
 
-  // TEST _updateDelegationFlagByType
+  // TEST _updateDelegationModeByType
   function test_updateDelegationFlagByTypeVotingFromNoDelegation()
     public
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       true
     );
 
-    assertEq(uint8(delegationBalance.delegationState), uint8(DelegationState.VOTING_DELEGATED));
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.VOTING_DELEGATED));
   }
 
   function test_updateDelegationFlagByTypePropositionFromNoDelegation()
     public
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       true
     );
 
-    assertEq(
-      uint8(delegationBalance.delegationState),
-      uint8(DelegationState.PROPOSITION_DELEGATED)
-    );
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.PROPOSITION_DELEGATED));
   }
 
   function test_updateDelegationFlagByTypeVotingFromPropositionDelegation()
@@ -381,13 +378,13 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     )
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       true
     );
 
-    assertEq(uint8(delegationBalance.delegationState), uint8(DelegationState.FULL_POWER_DELEGATED));
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.FULL_POWER_DELEGATED));
   }
 
   function test_updateDelegationFlagByTypePropositionFromVotingDelegation()
@@ -399,13 +396,13 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     )
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       true
     );
 
-    assertEq(uint8(delegationBalance.delegationState), uint8(DelegationState.FULL_POWER_DELEGATED));
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.FULL_POWER_DELEGATED));
   }
 
   function test_updateDelegationFlagByTypeRemoveVotingFromVoting()
@@ -417,13 +414,13 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     )
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       false
     );
 
-    assertEq(uint8(delegationBalance.delegationState), uint8(DelegationState.NO_DELEGATION));
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.NO_DELEGATION));
   }
 
   function test_updateDelegationFlagByTypeRemovePropositionFromProposition()
@@ -435,13 +432,13 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     )
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       false
     );
 
-    assertEq(uint8(delegationBalance.delegationState), uint8(DelegationState.NO_DELEGATION));
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.NO_DELEGATION));
   }
 
   function test_updateDelegationFlagByTypeRemoveVotingFromFullDelegation()
@@ -449,16 +446,13 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     prepareDelegationToReceiver(USER_1, USER_2)
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       false
     );
 
-    assertEq(
-      uint8(delegationBalance.delegationState),
-      uint8(DelegationState.PROPOSITION_DELEGATED)
-    );
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.PROPOSITION_DELEGATED));
   }
 
   function test_updateDelegationFlagByTypeRemovePropositionFromFullDelegation()
@@ -466,13 +460,13 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     prepareDelegationToReceiver(USER_1, USER_2)
     validateNoChangesInDelegation(USER_1)
   {
-    DelegationBalance memory delegationBalance = _updateDelegationFlagByType(
-      _delegatedBalances[USER_1],
+    DelegationState memory delegationState = _updateDelegationModeByType(
+      _delegatedState[USER_1],
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       false
     );
 
-    assertEq(uint8(delegationBalance.delegationState), uint8(DelegationState.VOTING_DELEGATED));
+    assertEq(uint8(delegationState.delegationMode), uint8(DelegationMode.VOTING_DELEGATED));
   }
 
   // TEST _delegateByType
@@ -813,12 +807,12 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
 
     assertEq(
       votingPower,
-      uint256(_delegatedBalances[USER_2].delegatedVotingBalance * POWER_SCALE_FACTOR)
+      uint256(_delegatedState[USER_2].delegatedVotingBalance * POWER_SCALE_FACTOR)
     );
 
     assertEq(
       propositionPower,
-      uint256(_delegatedBalances[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
+      uint256(_delegatedState[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
     );
   }
 
@@ -832,12 +826,12 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
 
     assertEq(
       votingPower,
-      uint256(_delegatedBalances[USER_2].delegatedVotingBalance * POWER_SCALE_FACTOR)
+      uint256(_delegatedState[USER_2].delegatedVotingBalance * POWER_SCALE_FACTOR)
     );
 
     assertEq(
       propositionPower,
-      uint256(_delegatedBalances[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
+      uint256(_delegatedState[USER_2].delegatedPropositionBalance * POWER_SCALE_FACTOR)
     );
   }
 

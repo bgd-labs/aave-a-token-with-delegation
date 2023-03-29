@@ -12,7 +12,7 @@ import {AToken} from 'aave-v3-core/contracts/protocol/tokenization/AToken.sol';
         delegation balances. Balances amount is taken care of by AToken contract
  */
 contract ATokenWithDelegation is AToken, BaseDelegation {
-  mapping(address => DelegationBalance) internal _delegatedBalances;
+  mapping(address => DelegationState) internal _delegatedState;
 
   constructor(IPool pool) AToken(pool) {}
 
@@ -20,10 +20,10 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     return DOMAIN_SEPARATOR();
   }
 
-  function _getDelegationBalance(
+  function _getDelegationState(
     address user
-  ) internal view override returns (DelegationBalance memory) {
-    return _delegatedBalances[user];
+  ) internal view override returns (DelegationState memory) {
+    return _delegatedState[user];
   }
 
   function _getBalance(address user) internal view override returns (uint256) {
@@ -37,11 +37,11 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     }
   }
 
-  function _setDelegationBalance(
+  function _setDelegationState(
     address user,
-    DelegationBalance memory delegationBalance
+    DelegationState memory delegationState
   ) internal override {
-    _delegatedBalances[user] = delegationBalance;
+    _delegatedState[user] = delegationState;
   }
 
   /**
