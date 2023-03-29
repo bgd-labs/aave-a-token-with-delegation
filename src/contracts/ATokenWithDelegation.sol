@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {AToken} from './AToken.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
+import {AToken} from 'aave-v3-core/contracts/protocol/tokenization/AToken.sol';
 
 /**
  * @author BGD Labs
@@ -47,9 +47,17 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     userState.delegationState = delegationBalance.delegationState;
   }
 
-  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
+  /**
+   * @notice Overrides the parent _transfer to force validated transfer() and delegation balance transfers
+   * @param from The source address
+   * @param to The destination address
+   * @param amount The amount getting transferred
+   */
+  function _transfer(address from, address to, uint128 amount) internal override {
     uint256 fromBalanceBefore = _getBalance(from);
     uint256 toBalanceBefore = _getBalance(to);
     _delegationChangeOnTransfer(from, to, fromBalanceBefore, toBalanceBefore, amount);
+
+    _transfer(from, to, amount, true);
   }
 }

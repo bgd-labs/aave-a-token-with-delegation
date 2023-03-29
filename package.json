@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "lint": "prettier ./",
-    "lint:fix": "npm run lint -- --write",
-    "etherscan:aave-atoken": "env-cmd cast etherscan-source -d etherscan 0x7EfFD7b47Bfd17e52fB7559d3f924201b9DbfF3d",
-    "aaveStakeToken:diff": "npm run etherscan:aave-atoken && sh generateDiffs.sh ./etherscan/StakedTokenV2Rev3/Contract.sol ./src/contracts/StakedTokenV2Rev4.sol StakedTokenV2Rev4"
+    "lint:fix": "npm run lint -- --write"
   },
   "repository": {
     "type": "git",
