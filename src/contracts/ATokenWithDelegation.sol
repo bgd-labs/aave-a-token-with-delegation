@@ -47,7 +47,7 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     userState.delegationState = delegationBalance.delegationState;
   }
 
-  function _afterTokenTransfer(address from, address to, uint256 amount) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     uint256 fromBalanceBefore = _getBalance(from);
     uint256 toBalanceBefore = _getBalance(to);
     _delegationChangeOnTransfer(from, to, fromBalanceBefore, toBalanceBefore, amount);

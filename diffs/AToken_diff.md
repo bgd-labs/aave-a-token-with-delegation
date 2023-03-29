@@ -1,6 +1,6 @@
 ```diff
 diff --git a/./etherscan/AToken/@aave/core-v3/contracts/protocol/tokenization/AToken.sol b/./src/contracts/AToken.sol
-index 57f3b16..d84245c 100644
+index 57f3b16..e5a70e5 100644
 --- a/./etherscan/AToken/@aave/core-v3/contracts/protocol/tokenization/AToken.sol
 +++ b/./src/contracts/AToken.sol
 @@ -1,19 +1,19 @@
@@ -41,7 +41,7 @@ index 57f3b16..d84245c 100644
     */
    function _transfer(address from, address to, uint128 amount) internal virtual override {
 +    // transfer delegation balances
-+    _afterTokenTransfer(from, to, amount);
++    _beforeTokenTransfer(from, to, amount);
 +
      _transfer(from, to, amount, true);
    }
@@ -52,11 +52,11 @@ index 57f3b16..d84245c 100644
    }
 +
 +  /**
-+   * @dev after token transfer hook, added for delegation system
++   * @dev before token transfer hook, added for delegation system
 +   * @param from token sender
 +   * @param to token recipient
 +   * @param amount amount of tokens sent
 +   **/
-+  function _afterTokenTransfer(address from, address to, uint256 amount) internal virtual {}
++  function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
  }
 ```
