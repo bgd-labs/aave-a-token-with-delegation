@@ -41,10 +41,10 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     address user,
     DelegationBalance memory delegationBalance
   ) internal override {
-    DelegationBalance storage userState = _delegatedBalances[user];
-    userState.delegatedPropositionBalance = delegationBalance.delegatedPropositionBalance;
-    userState.delegatedVotingBalance = delegationBalance.delegatedVotingBalance;
-    userState.delegationState = delegationBalance.delegationState;
+    _delegatedBalances[user].delegatedPropositionBalance = delegationBalance
+      .delegatedPropositionBalance;
+    _delegatedBalances[user].delegatedVotingBalance = delegationBalance.delegatedVotingBalance;
+    _delegatedBalances[user].delegationState = delegationBalance.delegationState;
   }
 
   /**
