@@ -105,6 +105,14 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
   }
 
   /**
+   * @notice Returns the delegation mode of account
+   * @return The DelegationMode of account
+   */
+  function delegationModeOf(address account) public view returns (DelegationMode) {
+    return _userState[account].delegationMode;
+  }
+
+  /**
    * @notice Returns the address of the Incentives Controller contract
    * @return The address of the Incentives Controller
    */

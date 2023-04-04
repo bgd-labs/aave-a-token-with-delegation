@@ -7,6 +7,7 @@ import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGoverna
 import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
 
 contract ATokenWithDelegationIntegrationTest is Test {
   address constant USER_1 = address(123);
@@ -36,6 +37,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
 
     (uint256 votingPower, uint256 propositionPower) = aToken.getPowersCurrent(USER_1);
 
+    assertEq(uint8(aToken.delegationModeOf(USER_1)), uint8(DelegationMode.NO_DELEGATION));
     assertEq(votingPower, AMOUNT);
     assertEq(propositionPower, AMOUNT);
   }
@@ -55,6 +57,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
 
     _validateDelegatees();
     _validateVotingPower();
+    _validateDelegationMode();
 
     assertEq(IERC20(address(aToken)).balanceOf(USER_1), AMOUNT);
     assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
@@ -66,11 +69,26 @@ contract ATokenWithDelegationIntegrationTest is Test {
 
     _validateDelegateesAfter();
     _validateVotingPowerAfter();
+    _validateDelegationModeAfter();
 
     assertEq(IERC20(address(aToken)).balanceOf(USER_1), 0);
     assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
     assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT * 2);
     assertEq(IERC20(address(aToken)).balanceOf(USER_4), AMOUNT);
+  }
+
+  function _validateDelegationMode() internal {
+    assertEq(uint8(aToken.delegationModeOf(USER_1)), uint8(DelegationMode.FULL_POWER_DELEGATED));
+    assertEq(uint8(aToken.delegationModeOf(USER_2)), uint8(DelegationMode.NO_DELEGATION));
+    assertEq(uint8(aToken.delegationModeOf(USER_3)), uint8(DelegationMode.FULL_POWER_DELEGATED));
+    assertEq(uint8(aToken.delegationModeOf(USER_4)), uint8(DelegationMode.NO_DELEGATION));
+  }
+
+  function _validateDelegationModeAfter() internal {
+    assertEq(uint8(aToken.delegationModeOf(USER_1)), uint8(DelegationMode.FULL_POWER_DELEGATED));
+    assertEq(uint8(aToken.delegationModeOf(USER_2)), uint8(DelegationMode.NO_DELEGATION));
+    assertEq(uint8(aToken.delegationModeOf(USER_3)), uint8(DelegationMode.FULL_POWER_DELEGATED));
+    assertEq(uint8(aToken.delegationModeOf(USER_4)), uint8(DelegationMode.NO_DELEGATION));
   }
 
   function _validateVotingPower() internal {
