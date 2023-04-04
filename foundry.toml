@@ -7,7 +7,7 @@ libs = ['lib']
 remappings = [
   'aave-token-v3/=lib/aave-token-v3/src/',
 ]
-fs_permissions = [{access = "write", path = "./reports"}]
+fs_permissions = [{access = "write", path = "./reports"}, {access = "read", path = "./tests/utils/aTokenHolders.json"}]
 
 [rpc_endpoints]
 mainnet = "${RPC_MAINNET}"

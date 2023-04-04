@@ -46,8 +46,8 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
    * this field to store the user's stable rate.
    */
   struct UserState {
-    DelegationMode delegationMode;
     uint120 balance;
+    DelegationMode delegationMode;
     uint128 additionalData;
   }
   // Map of users address and their state data (userAddress => userStateData)
