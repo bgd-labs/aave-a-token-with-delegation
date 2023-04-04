@@ -1,6 +1,6 @@
 ```diff
 diff --git a/lib/aave-v3-core/contracts/protocol/tokenization/base/IncentivizedERC20.sol b/src/contracts/IncentivizedERC20.sol
-index 08a219e..0d73ceb 100644
+index 08a219e..eff5620 100644
 --- a/lib/aave-v3-core/contracts/protocol/tokenization/base/IncentivizedERC20.sol
 +++ b/src/contracts/IncentivizedERC20.sol
 @@ -1,16 +1,17 @@
@@ -37,27 +37,12 @@ index 08a219e..0d73ceb 100644
     */
    struct UserState {
 -    uint128 balance;
-+    DelegationMode delegationMode;
 +    uint120 balance;
++    DelegationMode delegationMode;
      uint128 additionalData;
    }
    // Map of users address and their state data (userAddress => userStateData)
-@@ -102,6 +104,14 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
-     return _userState[account].balance;
-   }
- 
-+  /**
-+   * @notice Returns the delegation mode of account
-+   * @return The DelegationMode of account
-+   */
-+  function delegationModeOf(address account) public view returns (DelegationMode) {
-+    return _userState[account].delegationMode;
-+  }
-+
-   /**
-    * @notice Returns the address of the Incentives Controller contract
-    * @return The address of the Incentives Controller
-@@ -120,7 +130,7 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
+@@ -120,7 +122,7 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
  
    /// @inheritdoc IERC20
    function transfer(address recipient, uint256 amount) external virtual override returns (bool) {
@@ -66,7 +51,7 @@ index 08a219e..0d73ceb 100644
      _transfer(_msgSender(), recipient, castAmount);
      return true;
    }
-@@ -145,7 +155,7 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
+@@ -145,7 +147,7 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
      address recipient,
      uint256 amount
    ) external virtual override returns (bool) {
@@ -75,7 +60,7 @@ index 08a219e..0d73ceb 100644
      _approve(sender, _msgSender(), _allowances[sender][_msgSender()] - castAmount);
      _transfer(sender, recipient, castAmount);
      return true;
-@@ -182,10 +192,10 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
+@@ -182,10 +184,10 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
     * @param recipient The destination address
     * @param amount The amount getting transferred
     */
