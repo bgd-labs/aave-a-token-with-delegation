@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
-import {AToken} from 'aave-v3-core/contracts/protocol/tokenization/AToken.sol';
+import {AToken} from './AToken.sol';
 
 /**
  * @author BGD Labs
@@ -41,6 +41,7 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     address user,
     DelegationState memory delegationState
   ) internal override {
+    _userState[user].delegationMode = delegationState.delegationMode;
     _delegatedState[user] = delegationState;
   }
 
@@ -50,7 +51,7 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
    * @param to The destination address
    * @param amount The amount getting transferred
    */
-  function _transfer(address from, address to, uint128 amount) internal override {
+  function _transfer(address from, address to, uint120 amount) internal override {
     _delegationChangeOnTransfer(from, to, _getBalance(from), _getBalance(to), amount);
     _transfer(from, to, amount, true);
   }
