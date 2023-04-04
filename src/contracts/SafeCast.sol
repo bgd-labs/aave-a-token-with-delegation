@@ -34,14 +34,14 @@ library SafeCast {
   }
 
   /**
-   * @dev Returns the downcasted uint224 from uint256, reverting on
-   * overflow (when the input is greater than largest uint224).
+   * @dev Returns the downcasted uint120 from uint256, reverting on
+   * overflow (when the input is greater than largest uint120).
    *
-   * Counterpart to Solidity's `uint224` operator.
+   * Counterpart to Solidity's `uint120` operator.
    *
    * Requirements:
    *
-   * - input must fit into 224 bits
+   * - input must fit into 120 bits
    */
   function toUint120(uint256 value) internal pure returns (uint120) {
     require(value <= type(uint120).max, "SafeCast: value doesn't fit in 120 bits");
