@@ -1,11 +1,12 @@
 ```diff
 diff --git a/lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol b/src/contracts/AToken.sol
-index 57f3b16..56cba9b 100644
+index 57f3b16..5959f33 100644
 --- a/lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol
 +++ b/src/contracts/AToken.sol
 @@ -1,19 +1,19 @@
- // SPDX-License-Identifier: BUSL-1.1
+-// SPDX-License-Identifier: BUSL-1.1
 -pragma solidity 0.8.10;
++// SPDX-License-Identifier: MIT
 +pragma solidity ^0.8.10;
  
 -import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';

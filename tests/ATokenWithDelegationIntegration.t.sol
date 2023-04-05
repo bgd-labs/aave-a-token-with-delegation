@@ -7,7 +7,6 @@ import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGoverna
 import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
-import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
 
 contract ATokenWithDelegationIntegrationTest is Test {
   address constant USER_1 = address(123);

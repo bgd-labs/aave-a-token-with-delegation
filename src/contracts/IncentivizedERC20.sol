@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
 import {Context} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/Context.sol';
@@ -44,6 +44,7 @@ abstract contract IncentivizedERC20 is Context, IERC20Detailed {
    * ATokens and VariableDebtTokens use this field store the index of the
    * user's last supply/withdrawal/borrow/repayment. StableDebtTokens use
    * this field to store the user's stable rate.
+   * delegationMode stores the current delegation of the user
    */
   struct UserState {
     uint120 balance;
