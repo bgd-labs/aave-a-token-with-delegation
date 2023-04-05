@@ -12,7 +12,12 @@ import {AToken} from './AToken.sol';
         delegation balances. Balances amount is taken care of by AToken contract
  */
 contract ATokenWithDelegation is AToken, BaseDelegation {
-  mapping(address => DelegationState) internal _delegatedState;
+  struct ATokenDelegationState {
+    uint72 delegatedPropositionBalance;
+    uint72 delegatedVotingBalance;
+  }
+
+  mapping(address => ATokenDelegationState) internal _delegatedState;
 
   constructor(IPool pool) AToken(pool) {}
 
@@ -23,7 +28,12 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
   function _getDelegationState(
     address user
   ) internal view override returns (DelegationState memory) {
-    return _delegatedState[user];
+    return
+      DelegationState({
+        delegatedPropositionBalance: _delegatedState[user].delegatedPropositionBalance,
+        delegatedVotingBalance: _delegatedState[user].delegatedVotingBalance,
+        delegationMode: _userState[user].delegationMode
+      });
   }
 
   function _getBalance(address user) internal view override returns (uint256) {
@@ -42,7 +52,8 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     DelegationState memory delegationState
   ) internal override {
     _userState[user].delegationMode = delegationState.delegationMode;
-    _delegatedState[user] = delegationState;
+    _delegatedState[user].delegatedPropositionBalance = delegationState.delegatedPropositionBalance;
+    _delegatedState[user].delegatedVotingBalance = delegationState.delegatedVotingBalance;
   }
 
   /**
