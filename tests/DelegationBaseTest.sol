@@ -30,7 +30,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   // prepare a state where delegator is delegating full power to receiver
   modifier prepareDelegationToReceiver(address delegator, address receiver) {
     // set up delegator delegation balances
-    _delegatedState[delegator].delegationMode = DelegationMode.FULL_POWER_DELEGATED;
+    _userState[delegator].delegationMode = DelegationMode.FULL_POWER_DELEGATED;
 
     // set up receiver delegation balances
     _delegatedState[receiver].delegatedVotingBalance = uint72(
@@ -53,14 +53,14 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   ) {
     // set up receiver delegation balances
     if (delegationType == IGovernancePowerDelegationToken.GovernancePowerType.VOTING) {
-      _delegatedState[delegator].delegationMode = DelegationMode.VOTING_DELEGATED;
+      _userState[delegator].delegationMode = DelegationMode.VOTING_DELEGATED;
 
       _delegatedState[receiver].delegatedVotingBalance = uint72(
         _userState[delegator].balance / POWER_SCALE_FACTOR
       );
       _votingDelegatee[delegator] = receiver;
     } else {
-      _delegatedState[delegator].delegationMode = DelegationMode.PROPOSITION_DELEGATED;
+      _userState[delegator].delegationMode = DelegationMode.PROPOSITION_DELEGATED;
 
       _delegatedState[receiver].delegatedPropositionBalance = uint72(
         _userState[delegator].balance / POWER_SCALE_FACTOR
@@ -83,7 +83,7 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       user,
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
-    DelegationMode delegationStateBefore = _delegatedState[user].delegationMode;
+    DelegationMode delegationUserStateBefore = _userState[user].delegationMode;
 
     _;
 
@@ -97,13 +97,13 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       user,
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
-    DelegationMode delegationStateAfter = _delegatedState[user].delegationMode;
+    DelegationMode delegationUserStateAfter = _userState[user].delegationMode;
 
     assertEq(beforeVotingDelegatee, afterVotingDelegatee);
     assertEq(beforePropositionDelegatee, afterPropositionDelegatee);
     assertEq(beforeDelegationVotingPowerOfUser, afterDelegationVotingPowerOfUser);
     assertEq(beforeDelegationPropositionPowerOfUser, afterDelegationPropositionPowerOfUser);
-    assertEq(uint8(delegationStateBefore), uint8(delegationStateAfter));
+    assertEq(uint8(delegationUserStateBefore), uint8(delegationUserStateAfter));
   }
 
   modifier validateNoChangesInVotingDelegatee(address user) {
@@ -138,11 +138,11 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   }
 
   modifier validateNoChangesInDelegationState(address user) {
-    DelegationMode delegationStateBefore = _delegatedState[user].delegationMode;
+    DelegationMode delegationUserStateBefore = _userState[user].delegationMode;
     _;
-    DelegationMode delegationStateAfter = _delegatedState[user].delegationMode;
+    DelegationMode delegationUserStateAfter = _userState[user].delegationMode;
 
-    assertEq(uint8(delegationStateBefore), uint8(delegationStateAfter));
+    assertEq(uint8(delegationUserStateBefore), uint8(delegationUserStateAfter));
   }
 
   modifier validateUserTokenBalance(address user) {
@@ -227,28 +227,35 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     address delegationRecipient,
     DelegationType delegationType
   ) {
-    DelegationMode beforeDelegationStateOfDelegationRecipient = _getDelegationMode(
+    DelegationMode beforeDelegationUserStateOfDelegationRecipient = _getUserDelegationMode(
       delegationRecipient
     );
 
     _;
 
-    DelegationMode afterDelegationStateOfDelegator = _getDelegationMode(delegator);
-    DelegationMode afterDelegationStateOfDelegationRecipient = _getDelegationMode(
+    DelegationMode afterDelegationUserStateOfDelegator = _getUserDelegationMode(delegator);
+
+    DelegationMode afterDelegationUserStateOfDelegationRecipient = _getUserDelegationMode(
       delegationRecipient
     );
 
     // ----------------------------- VALIDATIONS ----------------------------------------------
     if (delegationType == DelegationType.FULL_POWER) {
-      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationMode.FULL_POWER_DELEGATED));
+      assertEq(
+        uint8(afterDelegationUserStateOfDelegator),
+        uint8(DelegationMode.FULL_POWER_DELEGATED)
+      );
     } else if (delegationType == DelegationType.VOTING) {
-      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationMode.VOTING_DELEGATED));
+      assertEq(uint8(afterDelegationUserStateOfDelegator), uint8(DelegationMode.VOTING_DELEGATED));
     } else {
-      assertEq(uint8(afterDelegationStateOfDelegator), uint8(DelegationMode.PROPOSITION_DELEGATED));
+      assertEq(
+        uint8(afterDelegationUserStateOfDelegator),
+        uint8(DelegationMode.PROPOSITION_DELEGATED)
+      );
     }
     assertEq(
-      uint8(beforeDelegationStateOfDelegationRecipient),
-      uint8(afterDelegationStateOfDelegationRecipient)
+      uint8(beforeDelegationUserStateOfDelegationRecipient),
+      uint8(afterDelegationUserStateOfDelegationRecipient)
     );
   }
 
@@ -280,12 +287,21 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     }
   }
 
-  function _getDelegationMode(address holder) internal view returns (DelegationMode) {
-    return _delegatedState[holder].delegationMode;
+  function _getUserDelegationMode(address holder) internal view returns (DelegationMode) {
+    return _userState[holder].delegationMode;
   }
 
   function _mintAmount(address receiver) internal {
     hoax(address(POOL));
     this.mint(receiver, receiver, AMOUNT, INDEX);
+  }
+
+  function _getUserDelegationState(address user) internal view returns (DelegationState memory) {
+    return
+      DelegationState({
+        delegatedPropositionBalance: _delegatedState[user].delegatedPropositionBalance,
+        delegatedVotingBalance: _delegatedState[user].delegatedVotingBalance,
+        delegationMode: _userState[user].delegationMode
+      });
   }
 }

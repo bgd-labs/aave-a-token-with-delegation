@@ -268,11 +268,11 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     prepareDelegationToReceiver(USER_1, USER_2)
   {
     uint256 delegatedVotingPower = _getDelegatedPowerByType(
-      _delegatedState[USER_2],
+      _getUserDelegationState(USER_2),
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
     uint256 delegatedPropositionPower = _getDelegatedPowerByType(
-      _delegatedState[USER_2],
+      _getUserDelegationState(USER_2),
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
 
@@ -288,12 +288,12 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   {
     address votingDelegatee = _getDelegateeByType(
       USER_1,
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING
     );
     address propositionDelegatee = _getDelegateeByType(
       USER_1,
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
     );
 
@@ -348,7 +348,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       true
     );
@@ -361,7 +361,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       true
     );
@@ -379,7 +379,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       true
     );
@@ -397,7 +397,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       true
     );
@@ -415,7 +415,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       false
     );
@@ -433,7 +433,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       false
     );
@@ -447,7 +447,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
       false
     );
@@ -461,7 +461,7 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     validateNoChangesInDelegation(USER_1)
   {
     DelegationState memory delegationState = _updateDelegationModeByType(
-      _delegatedState[USER_1],
+      _getUserDelegationState(USER_1),
       IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION,
       false
     );

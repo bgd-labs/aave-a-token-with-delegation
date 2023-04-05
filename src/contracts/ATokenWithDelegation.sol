@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 import {BaseDelegation} from 'aave-token-v3/BaseDelegation.sol';
-import {AToken} from 'aave-v3-core/contracts/protocol/tokenization/AToken.sol';
+import {AToken} from './AToken.sol';
 
 /**
  * @author BGD Labs
@@ -12,7 +12,12 @@ import {AToken} from 'aave-v3-core/contracts/protocol/tokenization/AToken.sol';
         delegation balances. Balances amount is taken care of by AToken contract
  */
 contract ATokenWithDelegation is AToken, BaseDelegation {
-  mapping(address => DelegationState) internal _delegatedState;
+  struct ATokenDelegationState {
+    uint72 delegatedPropositionBalance;
+    uint72 delegatedVotingBalance;
+  }
+
+  mapping(address => ATokenDelegationState) internal _delegatedState;
 
   constructor(IPool pool) AToken(pool) {}
 
@@ -23,7 +28,12 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
   function _getDelegationState(
     address user
   ) internal view override returns (DelegationState memory) {
-    return _delegatedState[user];
+    return
+      DelegationState({
+        delegatedPropositionBalance: _delegatedState[user].delegatedPropositionBalance,
+        delegatedVotingBalance: _delegatedState[user].delegatedVotingBalance,
+        delegationMode: _userState[user].delegationMode
+      });
   }
 
   function _getBalance(address user) internal view override returns (uint256) {
@@ -41,7 +51,9 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     address user,
     DelegationState memory delegationState
   ) internal override {
-    _delegatedState[user] = delegationState;
+    _userState[user].delegationMode = delegationState.delegationMode;
+    _delegatedState[user].delegatedPropositionBalance = delegationState.delegatedPropositionBalance;
+    _delegatedState[user].delegatedVotingBalance = delegationState.delegatedVotingBalance;
   }
 
   /**
@@ -50,7 +62,7 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
    * @param to The destination address
    * @param amount The amount getting transferred
    */
-  function _transfer(address from, address to, uint128 amount) internal override {
+  function _transfer(address from, address to, uint120 amount) internal override {
     _delegationChangeOnTransfer(from, to, _getBalance(from), _getBalance(to), amount);
     _transfer(from, to, amount, true);
   }
