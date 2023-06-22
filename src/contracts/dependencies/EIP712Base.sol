@@ -22,7 +22,7 @@ abstract contract EIP712Base is EIP712 {
   /**
    * @dev Constructor.
    */
-  constructor() EIP712('Aave Ethereum AAVE', '49') {
+  constructor() EIP712('Aave Ethereum AAVE', '1') {
     _chainId = block.chainid;
   }
 

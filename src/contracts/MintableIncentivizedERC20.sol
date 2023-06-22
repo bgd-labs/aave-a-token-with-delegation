@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
-
+import 'forge-std/console.sol';
 import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 import {IncentivizedERC20} from './IncentivizedERC20.sol';
@@ -38,7 +38,7 @@ abstract contract MintableIncentivizedERC20 is IncentivizedERC20 {
 
     uint120 oldAccountBalance = _userState[account].balance;
     _userState[account].balance = oldAccountBalance + amount;
-
+    console.log('balance', _userState[account].balance);
     IAaveIncentivesController incentivesControllerLocal = _incentivesController;
     if (address(incentivesControllerLocal) != address(0)) {
       incentivesControllerLocal.handleAction(account, oldTotalSupply, oldAccountBalance);

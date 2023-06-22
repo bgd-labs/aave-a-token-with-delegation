@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
-
+import 'forge-std/console.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
-import {GPv2SafeERC20} from './dependencies/GPv2SafeERC20.sol';
+import {GPv2SafeERC20} from 'aave-v3-core/contracts/dependencies/gnosis/contracts/GPv2SafeERC20.sol';
 import {SafeCast} from './dependencies/SafeCast.sol';
-import {VersionedInitializable} from './dependencies/VersionedInitializable.sol';
+import {VersionedInitializable} from 'aave-v3-core/contracts/protocol/libraries/aave-upgradeability/VersionedInitializable.sol';
 import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
@@ -45,42 +45,40 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
    */
   constructor(
     IPool pool
-  ) ScaledBalanceTokenBase(pool, 'Aave Ethereum AAVE', 'aEthAAVE', 0) EIP712Base() {
+  ) ScaledBalanceTokenBase(pool, 'ATOKEN_IMPL', 'ATOKEN_IMPL', 0) EIP712Base() {
     // Intentionally left blank
   }
 
   /// @inheritdoc IInitializableAToken
   function initialize(
-    IPool initializingPool,
-    address treasury,
+    IPool,
+    address,
     address underlyingAsset,
-    IAaveIncentivesController incentivesController,
-    uint8 aTokenDecimals,
-    string calldata aTokenName,
-    string calldata aTokenSymbol,
-    bytes calldata params
+    IAaveIncentivesController,
+    uint8,
+    string calldata,
+    string calldata,
+    bytes calldata
   ) public virtual override initializer {
-    require(initializingPool == POOL, Errors.POOL_ADDRESSES_DO_NOT_MATCH);
-    _setName(aTokenName);
-    _setSymbol(aTokenSymbol);
-    _setDecimals(aTokenDecimals);
-
-    _treasury = treasury;
+    //    require(initializingPool == POOL, Errors.POOL_ADDRESSES_DO_NOT_MATCH);
+    //    _setName(aTokenName);
+    //    _setSymbol(aTokenSymbol);
+    //    _setDecimals(aTokenDecimals);
+    //
+    //    _treasury = treasury;
     _underlyingAsset = underlyingAsset;
-    _incentivesController = incentivesController;
-
-    _domainSeparator = _calculateDomainSeparator();
-
-    emit Initialized(
-      underlyingAsset,
-      address(POOL),
-      treasury,
-      address(incentivesController),
-      aTokenDecimals,
-      aTokenName,
-      aTokenSymbol,
-      params
-    );
+    //    _incentivesController = incentivesController;
+    _domainSeparator = _domainSeparatorV4(); // TODO: not sure if needed
+    //    emit Initialized(
+    //      underlyingAsset,
+    //      address(POOL),
+    //      treasury,
+    //      address(incentivesController),
+    //      aTokenDecimals,
+    //      aTokenName,
+    //      aTokenSymbol,
+    //      params
+    //    );
   }
 
   /// @inheritdoc IAToken
@@ -129,6 +127,8 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
   function balanceOf(
     address user
   ) public view virtual override(IncentivizedERC20, IERC20) returns (uint256) {
+    console.log('address', _underlyingAsset);
+    console.log('somehting', POOL.getReserveNormalizedIncome(_underlyingAsset));
     return super.balanceOf(user).rayMul(POOL.getReserveNormalizedIncome(_underlyingAsset));
   }
 
