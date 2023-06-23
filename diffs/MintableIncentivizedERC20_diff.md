@@ -1,13 +1,12 @@
 ```diff
-diff --git a/lib/aave-v3-core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol b/src/contracts/MintableIncentivizedERC20.sol
-index 6d2120e..404e15a 100644
---- a/lib/aave-v3-core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol
+diff --git a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol b/src/contracts/MintableIncentivizedERC20.sol
+index cbd125f..404e15a 100644
+--- a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol
 +++ b/src/contracts/MintableIncentivizedERC20.sol
 @@ -1,8 +1,8 @@
 -// SPDX-License-Identifier: BUSL-1.1
--pragma solidity 0.8.10;
 +// SPDX-License-Identifier: MIT
-+pragma solidity ^0.8.10;
+ pragma solidity ^0.8.10;
  
 -import {IAaveIncentivesController} from '../../../interfaces/IAaveIncentivesController.sol';
 -import {IPool} from '../../../interfaces/IPool.sol';

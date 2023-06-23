@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 import {Context} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/Context.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
 import {IERC20Detailed} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol';
-import {SafeCast} from './SafeCast.sol';
+import {SafeCast} from './dependencies/SafeCast.sol';
 import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';

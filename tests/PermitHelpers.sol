@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGovernancePowerDelegationToken.sol';
+import {ECDSA} from 'openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol';
 
 library PermitHelpers {
   struct Permit {
@@ -34,19 +35,16 @@ library PermitHelpers {
     bytes32 permitTypeHash
   ) public pure returns (bytes32) {
     return
-      keccak256(
-        abi.encodePacked(
-          '\x19\x01',
-          domainSeparator,
-          keccak256(
-            abi.encode(
-              permitTypeHash,
-              _permit.owner,
-              _permit.spender,
-              _permit.value,
-              _permit.nonce,
-              _permit.deadline
-            )
+      ECDSA.toTypedDataHash(
+        domainSeparator,
+        keccak256(
+          abi.encode(
+            permitTypeHash,
+            _permit.owner,
+            _permit.spender,
+            _permit.value,
+            _permit.nonce,
+            _permit.deadline
           )
         )
       );
@@ -59,19 +57,16 @@ library PermitHelpers {
     bytes32 delegateByTypeHash
   ) public pure returns (bytes32) {
     return
-      keccak256(
-        abi.encodePacked(
-          '\x19\x01',
-          domainSeparator,
-          keccak256(
-            abi.encode(
-              delegateByTypeHash,
-              _delegateByType.delegator,
-              _delegateByType.delegatee,
-              _delegateByType.delegationType,
-              _delegateByType.nonce,
-              _delegateByType.deadline
-            )
+      ECDSA.toTypedDataHash(
+        domainSeparator,
+        keccak256(
+          abi.encode(
+            delegateByTypeHash,
+            _delegateByType.delegator,
+            _delegateByType.delegatee,
+            _delegateByType.delegationType,
+            _delegateByType.nonce,
+            _delegateByType.deadline
           )
         )
       );
@@ -84,18 +79,15 @@ library PermitHelpers {
     bytes32 delegateTypeHash
   ) public pure returns (bytes32) {
     return
-      keccak256(
-        abi.encodePacked(
-          '\x19\x01',
-          domainSeparator,
-          keccak256(
-            abi.encode(
-              delegateTypeHash,
-              _delegate.delegator,
-              _delegate.delegatee,
-              _delegate.nonce,
-              _delegate.deadline
-            )
+      ECDSA.toTypedDataHash(
+        domainSeparator,
+        keccak256(
+          abi.encode(
+            delegateTypeHash,
+            _delegate.delegator,
+            _delegate.delegatee,
+            _delegate.nonce,
+            _delegate.deadline
           )
         )
       );

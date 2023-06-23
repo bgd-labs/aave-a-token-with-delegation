@@ -10,6 +10,8 @@ import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethe
 import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
 import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
+import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
+import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
 
 contract ATokenBalancesTest is Test {
   using stdJson for string;

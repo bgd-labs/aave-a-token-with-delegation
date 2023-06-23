@@ -17,13 +17,15 @@ git-diff :
 
 
 storage-diff :
-	forge inspect lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol:AToken storage-layout --pretty  > reports/AToken_layout.md
+	forge inspect lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol:AToken storage-layout --pretty  > reports/AToken_layout.md
 	forge inspect src/contracts/ATokenWithDelegation.sol:ATokenWithDelegation storage-layout --pretty > reports/ATokenWithDelegation_layout.md
 	make git-diff before=reports/AToken_layout.md after=reports/ATokenWithDelegation_layout.md out=AToken_WithDelegation_layout_diff
 
 code-diff :
-	make git-diff before=lib/aave-v3-core/contracts/protocol/tokenization/AToken.sol after=src/contracts/AToken.sol out=AToken_diff
-	make git-diff before=lib/aave-v3-core/contracts/protocol/tokenization/base/IncentivizedERC20.sol after=src/contracts/IncentivizedERC20.sol out=IncentivizedERC20_diff
-	make git-diff before=lib/aave-v3-core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol after=src/contracts/MintableIncentivizedERC20.sol out=MintableIncentivizedERC20_diff
-	make git-diff before=lib/aave-v3-core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol after=src/contracts/ScaledBalanceTokenBase.sol out=ScaledBalanceTokenBase_diff
-	make git-diff before=lib/aave-v3-core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/SafeCast.sol out=SafeCast_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol after=src/contracts/AToken.sol out=AToken_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/interfaces/IAtoken.sol after=src/contracts/interfaces/IAToken.sol out=IAToken_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/interfaces/IInitializableAToken.sol after=src/contracts/interfaces/IInitializableAToken.sol out=IInitializableAToken_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/IncentivizedERC20.sol after=src/contracts/IncentivizedERC20.sol out=IncentivizedERC20_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol after=src/contracts/MintableIncentivizedERC20.sol out=MintableIncentivizedERC20_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol after=src/contracts/ScaledBalanceTokenBase.sol out=ScaledBalanceTokenBase_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/dependencies/SafeCast.sol out=SafeCast_diff

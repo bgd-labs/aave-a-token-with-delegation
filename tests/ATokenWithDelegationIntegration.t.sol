@@ -7,6 +7,8 @@ import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGoverna
 import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
+import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
+import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
 
 contract ATokenWithDelegationIntegrationTest is Test {
   address constant USER_1 = address(123);
@@ -48,6 +50,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
     aToken.mint(USER_4, USER_4, AMOUNT, INDEX);
     vm.stopPrank();
 
+    console.log('amount', IERC20(address(aToken)).balanceOf(USER_1));
     hoax(USER_1);
     aToken.delegate(USER_2);
     hoax(USER_3);
@@ -56,6 +59,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
     _validateDelegatees();
     _validateVotingPower();
 
+    console.log('amount', IERC20(address(aToken)).balanceOf(USER_1));
     assertEq(IERC20(address(aToken)).balanceOf(USER_1), AMOUNT);
     assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
     assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT);

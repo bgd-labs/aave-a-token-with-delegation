@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import {SafeCast} from './SafeCast.sol';
+import {SafeCast} from './dependencies/SafeCast.sol';
 import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
