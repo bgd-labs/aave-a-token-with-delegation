@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.10;
 
-import {EIP712, ECDSA} from 'openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol';
+import {ECDSA} from 'openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol';
+import {EIP712} from './EIP712.sol';
 
 /**
  * @title EIP712Base

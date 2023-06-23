@@ -27,23 +27,9 @@ contract ATokenWithDelegationIntegrationTest is Test {
     ATokenWithDelegation aTokenImpl = new ATokenWithDelegation(AaveV3Ethereum.POOL);
 
     hoax(address(AaveV3Ethereum.POOL_CONFIGURATOR));
-    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN)))
-      .upgradeToAndCall(
-        address(aTokenImpl),
-        abi.encodeWithSelector(
-          IInitializableAToken.initialize.selector,
-          AaveV3Ethereum.POOL,
-          AaveV3Ethereum.COLLECTOR,
-          AaveV3EthereumAssets.AAVE_UNDERLYING,
-          IAaveIncentivesController(0x8164Cc65827dcFe994AB23944CBC90e0aa80bFcb),
-          uint8(18),
-          'Aave Ethereum AAVE',
-          'aEthAAVE',
-          bytes('')
-        )
-      );
-
-    console.log('underlying', aToken.UNDERLYING_ASSET_ADDRESS());
+    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN))).upgradeTo(
+      address(aTokenImpl)
+    );
   }
 
   function testMintDoesNotGiveDelegation() public {

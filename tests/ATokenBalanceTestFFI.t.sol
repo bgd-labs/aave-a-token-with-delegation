@@ -42,21 +42,9 @@ contract ATokenBalancesTest is Test {
     _getBalances(true);
 
     hoax(address(AaveV3Ethereum.POOL_CONFIGURATOR));
-    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN)))
-      .upgradeToAndCall(
-        address(aTokenImpl),
-        abi.encodeWithSelector(
-          IInitializableAToken.initialize.selector,
-          AaveV3Ethereum.POOL,
-          AaveV3Ethereum.COLLECTOR,
-          AaveV3EthereumAssets.AAVE_UNDERLYING,
-          IAaveIncentivesController(0x8164Cc65827dcFe994AB23944CBC90e0aa80bFcb),
-          uint8(18),
-          'Aave Ethereum AAVE',
-          'aEthAAVE',
-          bytes('')
-        )
-      );
+    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN))).upgradeTo(
+      address(aTokenImpl)
+    );
 
     _getBalances(false);
 
