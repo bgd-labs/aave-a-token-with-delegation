@@ -22,9 +22,10 @@ storage-diff :
 	make git-diff before=reports/AToken_layout.md after=reports/ATokenWithDelegation_layout.md out=AToken_WithDelegation_layout_diff
 
 code-diff :
+	#yarn prettier lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol > reports/EIP712_prettier.sol
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol after=src/contracts/AToken.sol out=AToken_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/IncentivizedERC20.sol after=src/contracts/IncentivizedERC20.sol out=IncentivizedERC20_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol after=src/contracts/MintableIncentivizedERC20.sol out=MintableIncentivizedERC20_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol after=src/contracts/ScaledBalanceTokenBase.sol out=ScaledBalanceTokenBase_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/dependencies/SafeCast.sol out=SafeCast_diff
-	make git-diff before=lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol after=src/contracts/dependencies/EIP712.sol out=EIP712_diff
+	make git-diff before=reports/EIP712_prettier.sol after=src/contracts/dependencies/EIP712.sol out=EIP712_diff
