@@ -13,7 +13,7 @@ abstract contract EIP712Base is EIP712 {
   // Map of address nonces (address => nonce)
   mapping(address => uint256) internal _nonces;
 
-  bytes32 internal _DEPRECATED_DOMAIN_SEPARATOR;
+  bytes32 private _______DEPRECATED_DOMAIN_SEPARATOR;
 
   /**
    * @dev Constructor.
