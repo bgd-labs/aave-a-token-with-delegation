@@ -7,7 +7,6 @@ import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGoverna
 import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethereum.sol';
 import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
-import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
 import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
 
@@ -33,13 +32,13 @@ contract ATokenWithDelegationIntegrationTest is Test {
         address(aTokenImpl),
         abi.encodeWithSelector(
           IInitializableAToken.initialize.selector,
-          IPool(address(0)),
-          address(0),
-          0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9,
-          IAaveIncentivesController(address(0)),
-          uint8(0),
-          '',
-          '',
+          AaveV3Ethereum.POOL,
+          AaveV3Ethereum.COLLECTOR,
+          AaveV3EthereumAssets.AAVE_UNDERLYING,
+          IAaveIncentivesController(0x8164Cc65827dcFe994AB23944CBC90e0aa80bFcb),
+          uint8(18),
+          'Aave Ethereum AAVE',
+          'aEthAAVE',
           bytes('')
         )
       );

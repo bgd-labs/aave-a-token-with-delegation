@@ -10,6 +10,8 @@ import {AaveV3Ethereum, AaveV3EthereumAssets} from 'aave-address-book/AaveV3Ethe
 import {BaseAdminUpgradeabilityProxy} from 'aave-v3-core/contracts/dependencies/openzeppelin/upgradeability/BaseAdminUpgradeabilityProxy.sol';
 import {IERC20} from 'aave-v3-core/contracts/dependencies/openzeppelin/contracts/IERC20.sol';
 import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
+import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
+import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
 
 contract ATokenBalancesTest is Test {
   using stdJson for string;
@@ -40,9 +42,21 @@ contract ATokenBalancesTest is Test {
     _getBalances(true);
 
     hoax(address(AaveV3Ethereum.POOL_CONFIGURATOR));
-    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN))).upgradeTo(
-      address(aTokenImpl)
-    );
+    BaseAdminUpgradeabilityProxy(payable(address(AaveV3EthereumAssets.AAVE_A_TOKEN)))
+      .upgradeToAndCall(
+        address(aTokenImpl),
+        abi.encodeWithSelector(
+          IInitializableAToken.initialize.selector,
+          AaveV3Ethereum.POOL,
+          AaveV3Ethereum.COLLECTOR,
+          AaveV3EthereumAssets.AAVE_UNDERLYING,
+          IAaveIncentivesController(0x8164Cc65827dcFe994AB23944CBC90e0aa80bFcb),
+          uint8(18),
+          'Aave Ethereum AAVE',
+          'aEthAAVE',
+          bytes('')
+        )
+      );
 
     _getBalances(false);
 
