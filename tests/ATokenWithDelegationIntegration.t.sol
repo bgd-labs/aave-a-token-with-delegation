@@ -61,20 +61,20 @@ contract ATokenWithDelegationIntegrationTest is Test {
 
     console.log('amount', IERC20(address(aToken)).balanceOf(USER_1));
     assertEq(IERC20(address(aToken)).balanceOf(USER_1), AMOUNT);
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT);
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_4), AMOUNT);
+    assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
+    assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT);
+    assertEq(IERC20(address(aToken)).balanceOf(USER_4), AMOUNT);
 
-    //    hoax(USER_1);
-    //    IERC20(address(aToken)).transfer(USER_3, AMOUNT);
-    //
-    //    _validateDelegateesAfter();
-    //    _validateVotingPowerAfter();
-    //
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_1), 0);
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT * 2);
-    //    assertEq(IERC20(address(aToken)).balanceOf(USER_4), AMOUNT);
+    hoax(USER_1);
+    IERC20(address(aToken)).transfer(USER_3, AMOUNT);
+
+    _validateDelegateesAfter();
+    _validateVotingPowerAfter();
+
+    assertEq(IERC20(address(aToken)).balanceOf(USER_1), 0);
+    assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
+    assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT * 2);
+    assertEq(IERC20(address(aToken)).balanceOf(USER_4), AMOUNT);
   }
 
   function _validateVotingPower() internal {
