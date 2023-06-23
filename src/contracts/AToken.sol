@@ -8,9 +8,9 @@ import {VersionedInitializable} from 'aave-v3-core/contracts/protocol/libraries/
 import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
-import {IAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
+import {IAToken} from './interfaces/IAToken.sol';
 import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
-import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IInitializableAToken.sol';
+import {IInitializableAToken} from './interfaces/IInitializableAToken.sol';
 import {ScaledBalanceTokenBase} from './ScaledBalanceTokenBase.sol';
 import {IncentivizedERC20} from './IncentivizedERC20.sol';
 import {EIP712Base} from './dependencies/EIP712Base.sol';
@@ -50,36 +50,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
   }
 
   /// @inheritdoc IInitializableAToken
-  function initialize(
-    IPool initializingPool,
-    address treasury,
-    address underlyingAsset,
-    IAaveIncentivesController incentivesController,
-    uint8 aTokenDecimals,
-    string calldata aTokenName,
-    string calldata aTokenSymbol,
-    bytes calldata params
-  ) public virtual override initializer {
-    require(initializingPool == POOL, Errors.POOL_ADDRESSES_DO_NOT_MATCH);
-    _setName(aTokenName);
-    _setSymbol(aTokenSymbol);
-    _setDecimals(aTokenDecimals);
-
-    _treasury = treasury;
-    _underlyingAsset = underlyingAsset;
-    _incentivesController = incentivesController;
-    _domainSeparator = _domainSeparatorV4(); // TODO: not sure if needed
-    emit Initialized(
-      underlyingAsset,
-      address(POOL),
-      treasury,
-      address(incentivesController),
-      aTokenDecimals,
-      aTokenName,
-      aTokenSymbol,
-      params
-    );
-  }
+  function initialize() external virtual initializer {}
 
   /// @inheritdoc IAToken
   function mint(

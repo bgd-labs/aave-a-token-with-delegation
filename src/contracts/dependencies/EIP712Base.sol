@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 import {ECDSA} from 'openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol';
-import {EIP712} from './EIP712.sol';
+import {EIP712} from 'aave-token-v3/utils/EIP712.sol';
 
 /**
  * @title EIP712Base
@@ -10,22 +10,19 @@ import {EIP712} from './EIP712.sol';
  * @notice Base contract implementation of EIP712.
  */
 abstract contract EIP712Base is EIP712 {
-  bytes public constant EIP712_REVISION = bytes('1');
-  bytes32 internal constant EIP712_DOMAIN =
-    keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
-
   // Map of address nonces (address => nonce)
   mapping(address => uint256) internal _nonces;
 
-  bytes32 internal _domainSeparator;
-  uint256 internal immutable _chainId;
+  bytes32 internal _DEPRECATED_DOMAIN_SEPARATOR;
 
   /**
    * @dev Constructor.
    */
-  constructor() EIP712('Aave Ethereum AAVE', '1') {
-    // TODO: what should the revision be??
-    _chainId = block.chainid;
+  constructor() EIP712('Aave Ethereum AAVE', '2') {}
+
+  /// @dev maintained for backwards compatibility. See EIP712 _EIP712Version
+  function EIP712_REVISION() external returns (bytes memory) {
+    return bytes(_EIP712Version());
   }
 
   /**

@@ -1,6 +1,6 @@
 ```diff
 diff --git a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol b/src/contracts/AToken.sol
-index f613b66..4ec85a2 100644
+index f613b66..5a82468 100644
 --- a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol
 +++ b/src/contracts/AToken.sol
 @@ -1,19 +1,20 @@
@@ -28,9 +28,9 @@ index f613b66..4ec85a2 100644
 +import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 +import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 +import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
-+import {IAToken} from 'aave-v3-core/contracts/interfaces/IAToken.sol';
++import {IAToken} from './interfaces/IAToken.sol';
 +import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
-+import {IInitializableAToken} from 'aave-v3-core/contracts/interfaces/IInitializableAToken.sol';
++import {IInitializableAToken} from './interfaces/IInitializableAToken.sol';
 +import {ScaledBalanceTokenBase} from './ScaledBalanceTokenBase.sol';
 +import {IncentivizedERC20} from './IncentivizedERC20.sol';
 +import {EIP712Base} from './dependencies/EIP712Base.sol';
@@ -47,18 +47,47 @@ index f613b66..4ec85a2 100644
  
    address internal _treasury;
    address internal _underlyingAsset;
-@@ -67,9 +68,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-     _treasury = treasury;
-     _underlyingAsset = underlyingAsset;
-     _incentivesController = incentivesController;
+@@ -49,38 +50,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
+   }
+ 
+   /// @inheritdoc IInitializableAToken
+-  function initialize(
+-    IPool initializingPool,
+-    address treasury,
+-    address underlyingAsset,
+-    IAaveIncentivesController incentivesController,
+-    uint8 aTokenDecimals,
+-    string calldata aTokenName,
+-    string calldata aTokenSymbol,
+-    bytes calldata params
+-  ) public virtual override initializer {
+-    require(initializingPool == POOL, Errors.POOL_ADDRESSES_DO_NOT_MATCH);
+-    _setName(aTokenName);
+-    _setSymbol(aTokenSymbol);
+-    _setDecimals(aTokenDecimals);
+-
+-    _treasury = treasury;
+-    _underlyingAsset = underlyingAsset;
+-    _incentivesController = incentivesController;
 -
 -    _domainSeparator = _calculateDomainSeparator();
 -
-+    _domainSeparator = _domainSeparatorV4(); // TODO: not sure if needed
-     emit Initialized(
-       underlyingAsset,
-       address(POOL),
-@@ -180,14 +179,10 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
+-    emit Initialized(
+-      underlyingAsset,
+-      address(POOL),
+-      treasury,
+-      address(incentivesController),
+-      aTokenDecimals,
+-      aTokenName,
+-      aTokenSymbol,
+-      params
+-    );
+-  }
++  function initialize() external virtual initializer {}
+ 
+   /// @inheritdoc IAToken
+   function mint(
+@@ -180,14 +150,10 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
      //solium-disable-next-line
      require(block.timestamp <= deadline, Errors.INVALID_EXPIRATION);
      uint256 currentValidNonce = _nonces[owner];
@@ -76,7 +105,7 @@ index f613b66..4ec85a2 100644
      _nonces[owner] = currentValidNonce + 1;
      _approve(owner, spender, value);
    }
-@@ -223,7 +218,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
+@@ -223,7 +189,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
     * @param to The destination address
     * @param amount The amount getting transferred
     */
