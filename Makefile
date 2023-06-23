@@ -26,4 +26,5 @@ code-diff :
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/IncentivizedERC20.sol after=src/contracts/IncentivizedERC20.sol out=IncentivizedERC20_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol after=src/contracts/MintableIncentivizedERC20.sol out=MintableIncentivizedERC20_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol after=src/contracts/ScaledBalanceTokenBase.sol out=ScaledBalanceTokenBase_diff
-	make git-diff before=lib/aave-v3-factory/src/core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/SafeCast.sol out=SafeCast_diff
+	make git-diff before=lib/aave-v3-factory/src/core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/dependencies/SafeCast.sol out=SafeCast_diff
+	make git-diff before=lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol after=src/contracts/dependencies/EIP712.sol out=EIP712_diff
