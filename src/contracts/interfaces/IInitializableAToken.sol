@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.0;
 
-import {IAaveIncentivesController} from 'aave-v3-factory/core/contracts/interfaces/IAaveIncentivesController.sol';
-import {IPool} from 'aave-v3-factory/core/contracts/interfaces/IPool.sol';
+import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
+import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
 
 /**
  * @title IInitializableAToken
