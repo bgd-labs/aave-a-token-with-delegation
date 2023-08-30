@@ -30,4 +30,4 @@ code-diff :
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol after=src/contracts/ScaledBalanceTokenBase.sol out=ScaledBalanceTokenBase_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/dependencies/SafeCast.sol out=SafeCast_diff
 
-deploy-payload :; forge script scripts/UpdateAAavePayloadScript.s.sol:DeployUpdateAAvePayload --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv
+deploy-payload :; forge script scripts/UpdateAAavePayloadScript.s.sol:DeployUpdateAAavePayload --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv
