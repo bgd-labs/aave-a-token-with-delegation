@@ -3,7 +3,6 @@
 @aave/periphery-v3/=lib/aave-address-book/lib/aave-v3-periphery/
 aave-address-book/=lib/aave-address-book/src/
 aave-collector-unification/=lib/aave-v3-factory/lib/aave-collector-unification/
-aave-helpers/=lib/aave-v3-factory/lib/aave-helpers/
 aave-token-v2/=lib/aave-token-v3/lib/aave-token-v2/contracts/
 aave-token-v3/=lib/aave-token-v3/src/
 aave-v3-core/=lib/aave-v3-factory/src/core/
@@ -17,3 +16,5 @@ openzeppelin-contracts/=lib/openzeppelin-contracts/
 openzeppelin/=lib/openzeppelin-contracts/contracts/
 protocol-v2/=lib/aave-v3-factory/lib/aave-collector-unification/lib/protocol-v2/
 solidity-utils/=lib/aave-v3-factory/lib/solidity-utils/
+aave-helpers/=lib/aave-helpers/src
+
