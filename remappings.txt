@@ -15,6 +15,6 @@ governance-crosschain-bridges/=lib/aave-v3-factory/lib/aave-helpers/lib/governan
 openzeppelin-contracts/=lib/openzeppelin-contracts/
 openzeppelin/=lib/openzeppelin-contracts/contracts/
 protocol-v2/=lib/aave-v3-factory/lib/aave-collector-unification/lib/protocol-v2/
-solidity-utils/=lib/aave-v3-factory/lib/solidity-utils/
+solidity-utils/=lib/solidity-utils/src/
 aave-helpers/=lib/aave-helpers/src
 
