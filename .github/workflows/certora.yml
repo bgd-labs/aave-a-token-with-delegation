@@ -14,8 +14,14 @@ jobs:
   verify:
     runs-on: ubuntu-latest
 
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Give GitHub Actions access to bgd-labs/aave-v3-factory
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.FACTORY_SSH_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
