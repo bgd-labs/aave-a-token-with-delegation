@@ -8,13 +8,18 @@ import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
 
 contract PoolMock {
   address public constant ADDRESSES_PROVIDER = address(12351);
+
+  function getReserveNormalizedIncome(address underlyingAsset) external returns (uint256) {
+    return 1e27;
+  }
 }
 
 contract DelegationBaseTest is Test, ATokenWithDelegation {
   uint256 constant INDEX = 1e27;
   uint256 constant AMOUNT = 100 ether;
+  address pool = address(new PoolMock());
 
-  constructor() ATokenWithDelegation(IPool(address(new PoolMock()))) {}
+  constructor() ATokenWithDelegation(IPool(pool)) {}
 
   enum DelegationType {
     VOTING,
@@ -154,6 +159,20 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
     // ----------------------------- VALIDATIONS ----------------------------------------------
     // actual a token balance should not have changed
     assertEq(beforeDelegationActualBalanceOfDelegator, afterDelegationActualBalanceOfDelegator);
+  }
+
+  modifier validateUserTokenTransferBalance(address from, address to) {
+    uint128 fromBalanceBefore = _getHolderActualBalance(from);
+    uint128 toBalanceBefore = _getHolderActualBalance(to);
+
+    _;
+    uint128 toBalanceAfter = _getHolderActualBalance(to);
+    uint128 fromBalanceAfter = _getHolderActualBalance(from);
+
+    // ----------------------------- VALIDATIONS ----------------------------------------------
+    // actual a token balance should not have changed
+    assertEq(toBalanceAfter, fromBalanceBefore + toBalanceBefore);
+    assertEq(fromBalanceAfter, uint128(0));
   }
 
   // check that delegation power of delegator has been removed from delegation recipient

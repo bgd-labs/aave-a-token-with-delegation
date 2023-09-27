@@ -129,6 +129,31 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
     );
   }
 
+  // TEST transferOnLiquidation
+  function test_transferOnLiquidation()
+    public
+    mintAmount(USER_1)
+    mintAmount(USER_2)
+    prepareDelegationToReceiver(USER_1, USER_3)
+    prepareDelegationToReceiver(USER_2, USER_4)
+    validateUserTokenTransferBalance(USER_1, USER_2)
+    validateNoChangesInDelegationState(USER_1)
+    validateNoChangesInDelegationState(USER_2)
+    validateDelegationPower(
+      USER_1,
+      USER_4,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING
+    )
+    validateDelegationPower(
+      USER_1,
+      USER_4,
+      IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION
+    )
+  {
+    hoax(pool);
+    this.transferOnLiquidation(USER_1, USER_2, AMOUNT);
+  }
+
   // TEST _delegationChangeOnTransfer
   function test_delegationChangeOnTransfer()
     public
