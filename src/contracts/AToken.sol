@@ -8,7 +8,7 @@ import {VersionedInitializable} from 'aave-v3-core/contracts/protocol/libraries/
 import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
-import {IInitializableAToken} from 'aave-v3-factory/src/core/contracts/interfaces/IInitializableAToken.sol';
+import {IInitializableAToken} from './interfaces/IInitializableAToken.sol';
 import {IAToken} from './interfaces/IAToken.sol';
 import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
 import {ScaledBalanceTokenBase} from './ScaledBalanceTokenBase.sol';
