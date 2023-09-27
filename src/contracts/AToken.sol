@@ -8,9 +8,9 @@ import {VersionedInitializable} from 'aave-v3-core/contracts/protocol/libraries/
 import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
+import {IInitializableAToken} from 'aave-v3-factory/src/core/contracts/interfaces/IInitializableAToken.sol';
 import {IAToken} from './interfaces/IAToken.sol';
 import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
-import {IInitializableAToken} from './interfaces/IInitializableAToken.sol';
 import {ScaledBalanceTokenBase} from './ScaledBalanceTokenBase.sol';
 import {IncentivizedERC20} from './IncentivizedERC20.sol';
 import {EIP712Base} from './dependencies/EIP712Base.sol';
@@ -50,7 +50,16 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
   }
 
   /// @inheritdoc IInitializableAToken
-  function initialize() external virtual initializer {}
+  function initialize(
+    IPool,
+    address,
+    address,
+    IAaveIncentivesController,
+    uint8,
+    string calldata,
+    string calldata,
+    bytes calldata
+  ) public virtual override initializer {}
 
   /// @inheritdoc IAToken
   function mint(
