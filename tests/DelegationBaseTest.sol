@@ -17,9 +17,8 @@ contract PoolMock {
 contract DelegationBaseTest is Test, ATokenWithDelegation {
   uint256 constant INDEX = 1e27;
   uint256 constant AMOUNT = 100 ether;
-  address pool = address(new PoolMock());
 
-  constructor() ATokenWithDelegation(IPool(pool)) {}
+  constructor() ATokenWithDelegation(IPool(address(new PoolMock()))) {}
 
   enum DelegationType {
     VOTING,

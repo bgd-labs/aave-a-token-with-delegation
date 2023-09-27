@@ -61,7 +61,6 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
    * @param from The source address
    * @param to The destination address
    * @param amount The amount getting transferred
-   * @param validate True if the transfer needs to be validated, false otherwise
    */
   function _transfer(address from, address to, uint256 amount, bool validate) internal override {
     _delegationChangeOnTransfer(from, to, _getBalance(from), _getBalance(to), amount);
