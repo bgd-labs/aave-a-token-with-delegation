@@ -29,3 +29,5 @@ code-diff :
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/MintableIncentivizedERC20.sol after=src/contracts/MintableIncentivizedERC20.sol out=MintableIncentivizedERC20_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol after=src/contracts/ScaledBalanceTokenBase.sol out=ScaledBalanceTokenBase_diff
 	make git-diff before=lib/aave-v3-factory/src/core/contracts/dependencies/openzeppelin/contracts/SafeCast.sol after=src/contracts/dependencies/SafeCast.sol out=SafeCast_diff
+
+deploy-aaave-token :; forge script scripts/DeployAAaveTokenScript.s.sol:DeployAAaveToken --rpc-url mainnet --broadcast --ledger --mnemonic-indexes ${MNEMONIC_INDEX} --sender ${LEDGER_SENDER} --verify -vvvv

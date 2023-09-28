@@ -31,7 +31,7 @@ contract ATokenBalancesTest is Test {
   mapping(address => uint256) balancesAfter;
 
   function setUp() public {
-    vm.createSelectFork(vm.rpcUrl('mainnet'), 16931880);
+    vm.createSelectFork(vm.rpcUrl('mainnet'), 18227590);
 
     _getUsers();
   }
