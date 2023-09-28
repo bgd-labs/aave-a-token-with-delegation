@@ -1,56 +1,42 @@
-# BGD forge template
+# $aAAVE - Delegation compatible
 
-Basic template with prettier and rest configuration
+<p align="center">
+<img src="./aaave-token-gov-v3.png" width="300">
+</p>
 
-To create a new project using this template run
+<br>
 
-```shell
-$ forge init --template bgd-labs/bgd-forge-template my_new_project
-```
+Next iteration of the aAAVE token (Aave v3), optimized for its usage as voting asset on Aave Governance v3.
 
-## Recommended modules
+In addition to the inherited implementation from Aave v3, the new logic on aAAVE respects the same properties as the new AAVE token, which can be found [HERE](https://github.com/bgd-labs/aave-token-v3/blob/main/properties.md)
 
-[bgd-labs/solidity-utils](https://github.com/bgd-labs/solidity-utils) - common contracts we use everywhere, ie transparent proxy and around
+<br>
 
-[bgd-labs/aave-address-book](https://github.com/bgd-labs/aave-address-book) - the best and only source about all deployed Aave ecosystem related contracts across all the chains
+## Setup
 
-[bgd-labs/aave-helpers](https://github.com/bgd-labs/aave-helpers) - useful utils for integration, and not only testing related to Aave ecosystem contracts
+This repository requires having Foundry installed in the running machine. Instructions on how to do it [HERE](https://github.com/foundry-rs/foundry#installation).
 
-[Rari-Capital/solmate](https://github.com/Rari-Capital/solmate) - one of the best sources of base contracts for ERC20, ERC21, which will work with transparent proxy pattern out of the box
+After having installed Foundry:
+1. Add a `.env` file with properly configured `RPC_MAINNET` and `FORK_BLOCK`, following the example on `.env.example` 
+2. `make test` to run the simulation tests.
 
-[OpenZeppelin/openzeppelin-contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) - another very reputable and well organized source of base contracts for tokens, access control and many others
+<br>
 
-## Development
+## Security
 
-This project uses [Foundry](https://getfoundry.sh). See the [book](https://book.getfoundry.sh/getting-started/installation.html) for detailed instructions on how to install and use Foundry.
-The template ships with sensible default so you can use default `foundry` commands without resorting to `MakeFile`.
+- Internal testing and review by the BGD Labs team, but in terms of logic and upgradeability considerations.
+    - [Test suite](./tests/).
+    - [Storage layout and code diffs](./diffs/)
+- Security review and properties checking (formal verification) by [Certora](https://www.certora.com/), service provider of the Aave DAO.
+    - [Properties](./certora/)
+    - [Reports]()
 
-### Setup
+<br>
 
-```sh
-cp .env.example .env
-forge install
-```
+## Copyright
 
-### Test
+Copyright © 2023, Aave DAO, represented by its governance smart contracts.
 
-```sh
-forge test
-```
+Created by [BGD Labs](https://bgdlabs.com/).
 
-## Advanced features
-
-### Diffing
-
-For contracts upgrading implementations it's quite important to diff the implementation code to spot potential issues and ensure only the intended changes are included.
-Therefore the `Makefile` includes some commands to streamline the diffing process.
-
-#### Download
-
-You can `download` the current contract code of a deployed contract via `make download chain=polygon address=0x00`. This will download the contract source for specified address to `src/etherscan/chain_address`. This command works for all chains with a etherscan compatible block explorer.
-
-#### Git diff
-
-You can `git-diff` a downloaded contract against your src via `make git-diff before=./etherscan/chain_address after=./src out=filename`. This command will diff the two folders via git patience algorithm and write the output to `diffs/filename.md`.
-
-**Caveat**: If the onchain implementation was verified using flatten, for generating the diff you need to flatten the new contract via `forge flatten` and supply the flattened file instead fo the whole `./src` folder.
+[MIT license](./LICENSE)
