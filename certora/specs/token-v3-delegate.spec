@@ -84,6 +84,20 @@ rule powerWhenNotDelegating(address account) {
     @Link:
 */
 
+
+/* ===============================================================
+   This function should cover all the possible transfer functions
+   ==============================================================*/
+function CALL_TRANSFER(env e, address alice, address bob, uint256 amount) {
+    uint8 choose;
+
+    if (choose ==0)
+        transferFrom(e, alice, bob, amount);
+    else
+        transferOnLiquidation(e, alice, bob, amount);
+}
+
+
 rule vpTransferWhenBothNotDelegating(address alice, address bob, address charlie, uint256 amount) {
     env e;
     require alice != bob && bob != charlie && alice != charlie;
@@ -98,7 +112,7 @@ rule vpTransferWhenBothNotDelegating(address alice, address bob, address charlie
     mathint bobPowerBefore = getPowerCurrent(bob, VOTING_POWER());
     mathint charliePowerBefore = getPowerCurrent(charlie, VOTING_POWER());
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, VOTING_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, VOTING_POWER());
@@ -133,7 +147,7 @@ rule ppTransferWhenBothNotDelegating(address alice, address bob, address charlie
     mathint bobPowerBefore = getPowerCurrent(bob, PROPOSITION_POWER());
     mathint charliePowerBefore = getPowerCurrent(charlie, PROPOSITION_POWER());
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, PROPOSITION_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, PROPOSITION_POWER());
@@ -265,7 +279,7 @@ rule vpTransferWhenOnlyOneIsDelegating(address alice, address bob, address charl
     mathint aliceDelegatePowerBefore = getPowerCurrent(aliceDelegate, VOTING_POWER());
     uint256 aliceBalanceBefore = balanceOf(alice);
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, VOTING_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, VOTING_POWER());
@@ -314,7 +328,7 @@ rule ppTransferWhenOnlyOneIsDelegating(address alice, address bob, address charl
     mathint aliceDelegatePowerBefore = getPowerCurrent(aliceDelegate, PROPOSITION_POWER());
     uint256 aliceBalanceBefore = balanceOf(alice);
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, PROPOSITION_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, PROPOSITION_POWER());
@@ -518,7 +532,7 @@ rule vpOnlyAccount2IsDelegating(address alice, address bob, address charlie, uin
     mathint bobDelegatePowerBefore = getPowerCurrent(bobDelegate, VOTING_POWER());
     uint256 bobBalanceBefore = balanceOf(bob);
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, VOTING_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, VOTING_POWER());
@@ -564,7 +578,7 @@ rule ppOnlyAccount2IsDelegating(address alice, address bob, address charlie, uin
     mathint bobDelegatePowerBefore = getPowerCurrent(bobDelegate, PROPOSITION_POWER());
     uint256 bobBalanceBefore = balanceOf(bob);
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, PROPOSITION_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, PROPOSITION_POWER());
@@ -616,7 +630,7 @@ rule ppTransferWhenBothAreDelegating(address alice, address bob, address charlie
     uint256 aliceBalanceBefore = balanceOf(alice);
     uint256 bobBalanceBefore = balanceOf(bob);
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, PROPOSITION_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, PROPOSITION_POWER());
@@ -672,7 +686,7 @@ rule vpTransferWhenBothAreDelegating(address alice, address bob, address charlie
     uint256 aliceBalanceBefore = balanceOf(alice);
     uint256 bobBalanceBefore = balanceOf(bob);
 
-    transferFrom(e, alice, bob, amount);
+    CALL_TRANSFER(e, alice, bob, amount);
 
     mathint alicePowerAfter = getPowerCurrent(alice, VOTING_POWER());
     mathint bobPowerAfter = getPowerCurrent(bob, VOTING_POWER());
