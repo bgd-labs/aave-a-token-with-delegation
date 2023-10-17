@@ -46,20 +46,21 @@ contract ATokenWithDelegationIntegrationTest is Test {
   function testBurnRemovesPower(uint256 mintAmount, uint256 burnAmount) public {
     vm.assume(
       mintAmount > 0 &&
-        mintAmount < IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING).totalSupply() &&
-        burnAmount <= mintAmount
+        burnAmount > 0 &&
+        mintAmount < IERC20(AaveV3EthereumAssets.AAVE_A_TOKEN).totalSupply() &&
+        burnAmount < mintAmount
     );
     hoax(address(AaveV3Ethereum.POOL));
-    aToken.mint(USER_1, USER_1, AMOUNT, INDEX);
+    aToken.mint(USER_1, USER_1, mintAmount, INDEX);
 
     (uint256 votingPowerBefore, uint256 propositionPowerBefore) = aToken.getPowersCurrent(USER_1);
     hoax(address(AaveV3Ethereum.POOL));
-    aToken.burn(USER_1, USER_1, AMOUNT, INDEX);
+    aToken.burn(USER_1, USER_1, burnAmount, INDEX);
 
     (uint256 votingPower, uint256 propositionPower) = aToken.getPowersCurrent(USER_1);
 
-    assertEq(votingPower, votingPowerBefore - AMOUNT);
-    assertEq(propositionPower, propositionPowerBefore - AMOUNT);
+    assertEq(votingPower, votingPowerBefore - burnAmount);
+    assertEq(propositionPower, propositionPowerBefore - burnAmount);
   }
 
   function testTransferAlsoMovesDelegation() public {
