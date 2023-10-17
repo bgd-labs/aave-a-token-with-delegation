@@ -1,11 +1,10 @@
 ```diff
 diff --git a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/IncentivizedERC20.sol b/src/contracts/IncentivizedERC20.sol
-index 824252e..7e1f890 100644
+index 76e52eb..7e1f890 100644
 --- a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/IncentivizedERC20.sol
 +++ b/src/contracts/IncentivizedERC20.sol
 @@ -1,16 +1,17 @@
--// SPDX-License-Identifier: BUSL-1.1
-+// SPDX-License-Identifier: MIT
+ // SPDX-License-Identifier: MIT
  pragma solidity ^0.8.10;
  
 -import {Context} from '../../../dependencies/openzeppelin/contracts/Context.sol';

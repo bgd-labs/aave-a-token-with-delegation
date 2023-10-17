@@ -1,11 +1,10 @@
 ```diff
 diff --git a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol b/src/contracts/AToken.sol
-index f613b66..5a82468 100644
+index 9a0a029..54c3879 100644
 --- a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol
 +++ b/src/contracts/AToken.sol
 @@ -1,19 +1,20 @@
--// SPDX-License-Identifier: BUSL-1.1
-+// SPDX-License-Identifier: MIT
+ // SPDX-License-Identifier: MIT
  pragma solidity ^0.8.10;
  
 -import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';
@@ -47,11 +46,10 @@ index f613b66..5a82468 100644
  
    address internal _treasury;
    address internal _underlyingAsset;
-@@ -49,38 +50,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
-   }
+@@ -50,37 +51,15 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
  
    /// @inheritdoc IInitializableAToken
--  function initialize(
+   function initialize(
 -    IPool initializingPool,
 -    address treasury,
 -    address underlyingAsset,
@@ -83,11 +81,19 @@ index f613b66..5a82468 100644
 -      params
 -    );
 -  }
-+  function initialize() external virtual initializer {}
++    IPool,
++    address,
++    address,
++    IAaveIncentivesController,
++    uint8,
++    string calldata,
++    string calldata,
++    bytes calldata
++  ) public virtual override initializer {}
  
    /// @inheritdoc IAToken
    function mint(
-@@ -180,14 +150,10 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
+@@ -180,14 +159,10 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
      //solium-disable-next-line
      require(block.timestamp <= deadline, Errors.INVALID_EXPIRATION);
      uint256 currentValidNonce = _nonces[owner];
@@ -105,7 +111,7 @@ index f613b66..5a82468 100644
      _nonces[owner] = currentValidNonce + 1;
      _approve(owner, spender, value);
    }
-@@ -223,7 +189,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
+@@ -223,7 +198,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
     * @param to The destination address
     * @param amount The amount getting transferred
     */
