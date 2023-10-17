@@ -68,7 +68,7 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
   }
 
   /**
-   * @notice Overrides the parent _mint to account for delegation
+   * @notice Overrides the parent _mint to force delegation balance transfers
    * @param account The address receiving tokens
    * @param amount The amount of tokens to mint
    */
@@ -78,7 +78,7 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
   }
 
   /**
-   * @notice Overrides the parent _burn to account for delegation
+   * @notice Overrides the parent _burn to force delegation balance transfers
    * @param account The account whose tokens are burnt
    * @param amount The amount of tokens to burn
    */
