@@ -32,9 +32,19 @@ contract ATokenWithDelegationIntegrationTest is Test {
     );
   }
 
-  function testMintGivesPower(uint256 amount) public {
-    vm.assume(amount > 0 && amount < IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING).totalSupply());
+  function testMintGivesPower(uint256 preMint, uint256 amount) public {
+    vm.assume(
+      preMint < IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING).totalSupply() &&
+        amount < IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING).totalSupply() &&
+        preMint > 0 &&
+        amount > 0
+    );
+    console.log('pre', preMint);
+    console.log('amount', amount);
+    hoax(address(AaveV3Ethereum.POOL));
+    aToken.mint(USER_1, USER_1, preMint, INDEX);
     (uint256 votingPowerBefore, uint256 propositionPowerBefore) = aToken.getPowersCurrent(USER_1);
+
     hoax(address(AaveV3Ethereum.POOL));
     aToken.mint(USER_1, USER_1, amount, INDEX);
 
