@@ -1,11 +1,10 @@
 ```diff
 diff --git a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol b/src/contracts/ScaledBalanceTokenBase.sol
-index 1d705b5..7d83da0 100644
+index a79d891..7d83da0 100644
 --- a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/base/ScaledBalanceTokenBase.sol
 +++ b/src/contracts/ScaledBalanceTokenBase.sol
 @@ -1,11 +1,11 @@
--// SPDX-License-Identifier: BUSL-1.1
-+// SPDX-License-Identifier: MIT
+ // SPDX-License-Identifier: MIT
  pragma solidity ^0.8.10;
  
 -import {SafeCast} from '../../../dependencies/openzeppelin/contracts/SafeCast.sol';
