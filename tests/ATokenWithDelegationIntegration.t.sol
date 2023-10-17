@@ -32,7 +32,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
     );
   }
 
-  function testMintGivesDelegation() public {
+  function testMintGivesPower() public {
     (uint256 votingPowerBefore, uint256 propositionPowerBefore) = aToken.getPowersCurrent(USER_1);
     hoax(address(AaveV3Ethereum.POOL));
     aToken.mint(USER_1, USER_1, AMOUNT, INDEX);
@@ -42,7 +42,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
     assertEq(propositionPower, propositionPowerBefore + AMOUNT);
   }
 
-  function testBurnRemovesDelegation() public {
+  function testBurnRemovesPower() public {
     hoax(address(AaveV3Ethereum.POOL));
     aToken.mint(USER_1, USER_1, AMOUNT, INDEX);
 
