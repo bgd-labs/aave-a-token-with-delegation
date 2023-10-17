@@ -66,4 +66,14 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     _delegationChangeOnTransfer(from, to, _getBalance(from), _getBalance(to), amount);
     super._transfer(from, to, amount, validate);
   }
+
+  function _mint(address account, uint120 amount) internal override {
+    _delegationChangeOnTransfer(address(0), account, 0, _getBalance(account), amount);
+    super._mint(account, amount);
+  }
+
+  function _burn(address account, uint120 amount) internal override {
+    _delegationChangeOnTransfer(account, address(0), _getBalance(account), 0, amount);
+    super._burn(account, amount);
+  }
 }

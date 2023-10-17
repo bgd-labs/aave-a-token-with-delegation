@@ -26,6 +26,17 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   //                       INTERNAL METHODS
   // ----------------------------------------------------------------------------------------------
 
+  // TEST _mint
+  function test_mintEffectsDelegation()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_3)
+  {
+    // test that new minting for user1 will also affect the power on user 3
+    hoax(address(POOL));
+    this.mint(USER_1, USER_1, AMOUNT, INDEX);
+  }
+
   // TEST _governancePowerTransferByType
   function test_governancePowerTransferByTypeVoting()
     public
