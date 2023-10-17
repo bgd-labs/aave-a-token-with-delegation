@@ -39,8 +39,7 @@ contract ATokenWithDelegationIntegrationTest is Test {
         preMint > 0 &&
         amount > 0
     );
-    console.log('pre', preMint);
-    console.log('amount', amount);
+
     hoax(address(AaveV3Ethereum.POOL));
     aToken.mint(USER_1, USER_1, preMint, INDEX);
     (uint256 votingPowerBefore, uint256 propositionPowerBefore) = aToken.getPowersCurrent(USER_1);
