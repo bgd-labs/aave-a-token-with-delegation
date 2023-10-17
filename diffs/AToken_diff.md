@@ -1,6 +1,6 @@
 ```diff
 diff --git a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol b/src/contracts/AToken.sol
-index 9a0a029..a8828ff 100644
+index 9a0a029..54c3879 100644
 --- a/lib/aave-v3-factory/src/core/contracts/protocol/tokenization/AToken.sol
 +++ b/src/contracts/AToken.sol
 @@ -1,19 +1,20 @@
@@ -27,9 +27,9 @@ index 9a0a029..a8828ff 100644
 +import {Errors} from 'aave-v3-core/contracts/protocol/libraries/helpers/Errors.sol';
 +import {WadRayMath} from 'aave-v3-core/contracts/protocol/libraries/math/WadRayMath.sol';
 +import {IPool} from 'aave-v3-core/contracts/interfaces/IPool.sol';
-+import {IInitializableAToken} from './interfaces/IInitializableAToken.sol';
 +import {IAToken} from './interfaces/IAToken.sol';
 +import {IAaveIncentivesController} from 'aave-v3-core/contracts/interfaces/IAaveIncentivesController.sol';
++import {IInitializableAToken} from './interfaces/IInitializableAToken.sol';
 +import {ScaledBalanceTokenBase} from './ScaledBalanceTokenBase.sol';
 +import {IncentivizedERC20} from './IncentivizedERC20.sol';
 +import {EIP712Base} from './dependencies/EIP712Base.sol';
