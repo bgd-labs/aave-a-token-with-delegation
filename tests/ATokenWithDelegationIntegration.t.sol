@@ -32,17 +32,23 @@ contract ATokenWithDelegationIntegrationTest is Test {
     );
   }
 
-  function testMintGivesPower() public {
+  function testMintGivesPower(uint256 amount) public {
+    vm.assume(amount > 0 && amount < IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING).totalSupply());
     (uint256 votingPowerBefore, uint256 propositionPowerBefore) = aToken.getPowersCurrent(USER_1);
     hoax(address(AaveV3Ethereum.POOL));
-    aToken.mint(USER_1, USER_1, AMOUNT, INDEX);
+    aToken.mint(USER_1, USER_1, amount, INDEX);
 
     (uint256 votingPower, uint256 propositionPower) = aToken.getPowersCurrent(USER_1);
-    assertEq(votingPower, votingPowerBefore + AMOUNT);
-    assertEq(propositionPower, propositionPowerBefore + AMOUNT);
+    assertEq(votingPower, votingPowerBefore + amount);
+    assertEq(propositionPower, propositionPowerBefore + amount);
   }
 
-  function testBurnRemovesPower() public {
+  function testBurnRemovesPower(uint256 mintAmount, uint256 burnAmount) public {
+    vm.assume(
+      mintAmount > 0 &&
+        mintAmount < IERC20(AaveV3EthereumAssets.AAVE_UNDERLYING).totalSupply() &&
+        burnAmount <= mintAmount
+    );
     hoax(address(AaveV3Ethereum.POOL));
     aToken.mint(USER_1, USER_1, AMOUNT, INDEX);
 
@@ -64,7 +70,6 @@ contract ATokenWithDelegationIntegrationTest is Test {
     aToken.mint(USER_4, USER_4, AMOUNT, INDEX);
     vm.stopPrank();
 
-    console.log('amount', IERC20(address(aToken)).balanceOf(USER_1));
     hoax(USER_1);
     aToken.delegate(USER_2);
     hoax(USER_3);
@@ -73,7 +78,6 @@ contract ATokenWithDelegationIntegrationTest is Test {
     _validateDelegatees();
     _validateVotingPower();
 
-    console.log('amount', IERC20(address(aToken)).balanceOf(USER_1));
     assertEq(IERC20(address(aToken)).balanceOf(USER_1), AMOUNT);
     assertEq(IERC20(address(aToken)).balanceOf(USER_2), AMOUNT);
     assertEq(IERC20(address(aToken)).balanceOf(USER_3), AMOUNT);
