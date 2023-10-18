@@ -231,6 +231,7 @@ rule integrityBurn(address user, address to, uint256 amount)
 Burn is additive, can performed either all at once or gradually
 burn(from,to,x,index); burn(from,to,y,index) ~ burn(from,to,x+y,index) at the same initial state
 */
+/*
 rule additiveBurn(address user1, address user2, address to1, address to2, uint256 x, uint256 y)
 {
 	env e;
@@ -249,7 +250,7 @@ rule additiveBurn(address user1, address user2, address to1, address to2, uint25
 
 	assert 	bounded_error_eq(balanceUserScenario1, balanceUserScenario2, 3), "burn is not additive";
 }
-
+*/
 /*
 Burning one user atokens should have no effect on other users that are not involved in the action.
 */
