@@ -23,6 +23,7 @@ methods {
     function transferFrom(address,address,uint256) external;
     function permit(address,address,uint256,uint256,uint8,bytes32,bytes32) external;
 
+    function getBalance(address user) external returns (uint120) envfree;
     function delegate(address delegatee) external;
     function metaDelegate(address,address,uint256,uint8,bytes32,bytes32) external;
     function metaDelegateByType(address,address,uint8,uint256,uint8,bytes32,bytes32) external;
@@ -33,8 +34,8 @@ methods {
     function getDelegatedVotingBalance(address user) external returns (uint72) envfree;
     function isDelegatingProposition(address user) external returns (bool) envfree;
     function isDelegatingVoting(address user) external returns (bool) envfree;
-    function getVotingDelegate(address user) external returns (address) envfree;
-    function getPropositionDelegate(address user) external returns (address) envfree;
+    function getVotingDelegatee(address user) external returns (address) envfree;
+    function getPropositionDelegatee(address user) external returns (address) envfree;
     function getDelegationMode(address user) external returns (ATokenWithDelegation_Harness.DelegationMode) envfree;
 }
 

@@ -9,10 +9,10 @@
 pragma solidity ^0.8.0;
 
 
-import {ATokenWithDelegation} from '../../src/contracts/ATokenWithDelegation.sol';
-import {AToken} from '../../src/contracts/AToken.sol';
-import {IncentivizedERC20} from '../../src/contracts/IncentivizedERC20.sol';
-import {ScaledBalanceTokenBase} from '../../src/contracts/ScaledBalanceTokenBase.sol';
+import {ATokenWithDelegation} from '../munged/src/contracts/ATokenWithDelegation.sol';
+import {AToken} from '../munged/src/contracts/AToken.sol';
+import {IncentivizedERC20} from '../munged/src/contracts/IncentivizedERC20.sol';
+import {ScaledBalanceTokenBase} from '../munged/src/contracts/ScaledBalanceTokenBase.sol';
 
 import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {ECDSA} from  'openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol';
@@ -32,6 +32,10 @@ contract ATokenWithDelegation_Harness is ATokenWithDelegation {
 
     constructor(IPool pool) ATokenWithDelegation(pool) {}
 
+    function getBalance(address user) public view returns (uint120) {
+        return _userState[user].balance;
+    }
+    
     // returns user's delegated proposition balance
     function getDelegatedPropositionBalance(address user) public view returns (uint72) {
         return _delegatedState[user].delegatedPropositionBalance;
@@ -57,12 +61,12 @@ contract ATokenWithDelegation_Harness is ATokenWithDelegation {
     }
     
     // returns user's voting delegate
-    function getVotingDelegate(address user) public view returns (address) {
+    function getVotingDelegatee(address user) public view returns (address) {
         return _votingDelegatee[user];
     }
     
     // returns user's proposition delegate
-    function getPropositionDelegate(address user) public view returns (address) {
+    function getPropositionDelegatee(address user) public view returns (address) {
         return _propositionDelegatee[user];
     }
     

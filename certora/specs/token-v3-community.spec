@@ -168,13 +168,13 @@ rule metaDelegateNonRepeatable(env e1, env e2, address delegator, address delega
 
     @Formula:
     {
-        delegateBefore = type == 1 ? getPropositionDelegate(e.msg.sender) : getVotingDelegate(e.msg.sender)
+        delegateBefore = type == 1 ? getPropositionDelegatee(e.msg.sender) : getVotingDelegatee(e.msg.sender)
     }
     <
         delegateByType(e, delegatee, 1 - type)
     >
     {
-       delegateBefore = type == 1 ? getPropositionDelegate(e.msg.sender) : getVotingDelegate(e.msg.sender)
+       delegateBefore = type == 1 ? getPropositionDelegatee(e.msg.sender) : getVotingDelegatee(e.msg.sender)
        delegateBefore == delegateAfter
     }
 
@@ -188,12 +188,12 @@ rule delegateIndependence(method f) {
 
     IGovernancePowerDelegationToken.GovernancePowerType type;
 
-    address delegateBefore = type == IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION ? getPropositionDelegate(e.msg.sender) : getVotingDelegate(e.msg.sender);
+    address delegateBefore = type == IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION ? getPropositionDelegatee(e.msg.sender) : getVotingDelegatee(e.msg.sender);
 
     IGovernancePowerDelegationToken.GovernancePowerType otherType = type == IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION ? IGovernancePowerDelegationToken.GovernancePowerType.VOTING : IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION;
     delegateByType(e, _, otherType);
 
-    address delegateAfter = type == IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION ? getPropositionDelegate(e.msg.sender) : getVotingDelegate(e.msg.sender);
+    address delegateAfter = type == IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION ? getPropositionDelegatee(e.msg.sender) : getVotingDelegatee(e.msg.sender);
 
     assert delegateBefore == delegateAfter;
 }
