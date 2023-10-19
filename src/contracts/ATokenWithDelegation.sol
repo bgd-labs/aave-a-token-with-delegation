@@ -66,4 +66,24 @@ contract ATokenWithDelegation is AToken, BaseDelegation {
     _delegationChangeOnTransfer(from, to, _getBalance(from), _getBalance(to), amount);
     super._transfer(from, to, amount, validate);
   }
+
+  /**
+   * @notice Overrides the parent _mint to force delegation balance transfers
+   * @param account The address receiving tokens
+   * @param amount The amount of tokens to mint
+   */
+  function _mint(address account, uint120 amount) internal override {
+    _delegationChangeOnTransfer(address(0), account, 0, _getBalance(account), amount);
+    super._mint(account, amount);
+  }
+
+  /**
+   * @notice Overrides the parent _burn to force delegation balance transfers
+   * @param account The account whose tokens are burnt
+   * @param amount The amount of tokens to burn
+   */
+  function _burn(address account, uint120 amount) internal override {
+    _delegationChangeOnTransfer(account, address(0), _getBalance(account), 0, amount);
+    super._burn(account, amount);
+  }
 }

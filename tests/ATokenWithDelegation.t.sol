@@ -8,6 +8,7 @@ import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGoverna
 import {DelegationMode} from 'aave-token-v3/DelegationAwareBalance.sol';
 import {DelegationBaseTest} from './DelegationBaseTest.sol';
 import {PermitHelpers} from './PermitHelpers.sol';
+import {GPv2SafeERC20} from 'aave-v3-core/contracts/dependencies/gnosis/contracts/GPv2SafeERC20.sol';
 
 contract ATokenWithDelegationTest is DelegationBaseTest {
   address constant USER_1 = address(123);
@@ -25,6 +26,54 @@ contract ATokenWithDelegationTest is DelegationBaseTest {
   // ----------------------------------------------------------------------------------------------
   //                       INTERNAL METHODS
   // ----------------------------------------------------------------------------------------------
+
+  // TEST _mint
+  function test_mintAffectsDelegation()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_3)
+    validateNoChangesInDelegationState(USER_1)
+    validateNoChangesInVotingDelegatee(USER_1)
+    validateNoChangesInPropositionDelegatee(USER_1)
+    validateRecipientHasCorrectAmountOnMintBurn(USER_1, AMOUNT, true)
+    validateRecipientHasFullPowerOfDelegatorOnMintBurn(
+      USER_1,
+      USER_3,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+      AMOUNT,
+      true
+    )
+  {
+    // test that new minting for user1 will also affect the power on user 3
+    hoax(address(POOL));
+    this.mint(USER_1, USER_1, AMOUNT, INDEX);
+  }
+
+  function test_burnAffectsDelegation()
+    public
+    mintAmount(USER_1)
+    prepareDelegationToReceiver(USER_1, USER_3)
+    validateNoChangesInDelegationState(USER_1)
+    validateNoChangesInVotingDelegatee(USER_1)
+    validateNoChangesInPropositionDelegatee(USER_1)
+    validateRecipientHasCorrectAmountOnMintBurn(USER_1, AMOUNT, false)
+    validateRecipientHasFullPowerOfDelegatorOnMintBurn(
+      USER_1,
+      USER_3,
+      IGovernancePowerDelegationToken.GovernancePowerType.VOTING,
+      AMOUNT,
+      false
+    )
+  {
+    vm.mockCall(
+      _underlyingAsset,
+      abi.encodeWithSignature('safeTransfer(address,uint256)', USER_1, AMOUNT),
+      abi.encode()
+    );
+    // test that new burning for user1 will also affect the power on user 3
+    hoax(address(POOL));
+    this.burn(USER_1, USER_1, AMOUNT, INDEX);
+  }
 
   // TEST _governancePowerTransferByType
   function test_governancePowerTransferByTypeVoting()

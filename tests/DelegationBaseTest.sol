@@ -19,7 +19,9 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
   uint256 constant AMOUNT = 100 ether;
   address pool = address(new PoolMock());
 
-  constructor() ATokenWithDelegation(IPool(pool)) {}
+  constructor() ATokenWithDelegation(IPool(pool)) {
+    _underlyingAsset = address(123);
+  }
 
   enum DelegationType {
     VOTING,
@@ -205,6 +207,63 @@ contract DelegationBaseTest is Test, ATokenWithDelegation {
       beforeDelegationPowerOfDelegationRecipient -
         uint72(beforeDelegationActualBalanceOfDelegator / POWER_SCALE_FACTOR)
     );
+  }
+
+  // validates delgation minting / burning amounts
+  modifier validateRecipientHasCorrectAmountOnMintBurn(
+    address delegator,
+    uint256 amount,
+    bool mint
+  ) {
+    uint128 beforeActionActualBalanceOfDelegator = _getHolderActualBalance(delegator);
+
+    _;
+
+    uint128 afterActionActualBalanceOfDelegator = _getHolderActualBalance(delegator);
+
+    if (mint) {
+      assertEq(beforeActionActualBalanceOfDelegator + amount, afterActionActualBalanceOfDelegator);
+    } else {
+      assertEq(beforeActionActualBalanceOfDelegator - amount, afterActionActualBalanceOfDelegator);
+    }
+  }
+
+  modifier validateRecipientHasFullPowerOfDelegatorOnMintBurn(
+    address delegator,
+    address delegationRecipient,
+    IGovernancePowerDelegationToken.GovernancePowerType delegationType,
+    uint256 amount,
+    bool mint
+  ) {
+    uint128 beforeActionActualBalanceOfDelegator = _getHolderActualBalance(delegator);
+    uint128 beforeActionActualBalanceOfRecipient = _getHolderActualBalance(delegationRecipient);
+
+    uint72 beforeActionPowerOfDelegationRecipient = _getDelegationBalanceByType(
+      delegationRecipient,
+      delegationType
+    );
+    _;
+
+    uint128 afterActionActualBalanceOfDelegator = _getHolderActualBalance(delegator);
+    uint128 afterActionActualBalanceOfRecipient = _getHolderActualBalance(delegationRecipient);
+
+    uint72 afterActionPowerOfDelegationRecipient = _getDelegationBalanceByType(
+      delegationRecipient,
+      delegationType
+    );
+
+    assertEq(beforeActionActualBalanceOfRecipient, afterActionActualBalanceOfRecipient);
+    if (mint) {
+      assertEq(
+        beforeActionPowerOfDelegationRecipient + uint72(amount / POWER_SCALE_FACTOR),
+        afterActionPowerOfDelegationRecipient
+      );
+    } else {
+      assertEq(
+        beforeActionPowerOfDelegationRecipient - uint72(amount / POWER_SCALE_FACTOR),
+        afterActionPowerOfDelegationRecipient
+      );
+    }
   }
 
   // validates that the balance of delegator is now being delegated to recipient
