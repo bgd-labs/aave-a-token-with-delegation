@@ -26,7 +26,7 @@ contract AToken is VersionedInitializable, ScaledBalanceTokenBase, EIP712Base, I
   using SafeCast for uint256;
   using GPv2SafeERC20 for IERC20;
 
-  bytes32 public constant PERMIT_TYPEHASH =
+  bytes32 public immutable PERMIT_TYPEHASH =
     keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
 
   uint256 public constant ATOKEN_REVISION = 0x2;
