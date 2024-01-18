@@ -65,22 +65,22 @@ ghost mapping(address => bool) isDelegatingProposition {
 }
 
 // sum of all voting delegated balances
-ghost mathint sumDelegatedBalancesV {
+persistent ghost mathint sumDelegatedBalancesV {
     init_state axiom sumDelegatedBalancesV == 0;
 }
 
 // sum of all proposition undelegated balances
-ghost mathint sumUndelegatedBalancesV {
+persistent ghost mathint sumUndelegatedBalancesV {
     init_state axiom sumUndelegatedBalancesV == 0;
 }
 
 // sum of all proposition delegated balances
-ghost mathint sumDelegatedBalancesP {
+persistent ghost mathint sumDelegatedBalancesP {
     init_state axiom sumDelegatedBalancesP == 0;
 }
 
 // sum of all voting undelegated balances
-ghost mathint sumUndelegatedBalancesP {
+persistent ghost mathint sumUndelegatedBalancesP {
     init_state axiom sumUndelegatedBalancesP == 0;
 }
 

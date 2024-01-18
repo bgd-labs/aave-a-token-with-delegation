@@ -45,17 +45,17 @@ ghost rayDiv_MI(mathint , mathint) returns uint256 {
 
 
 
-ghost mapping(address => mathint) sum_all_voting_delegated_power {
+persistent ghost mapping(address => mathint) sum_all_voting_delegated_power {
     init_state axiom forall address delegatee. sum_all_voting_delegated_power[delegatee] == 0;
 }
-ghost mapping(address => mathint) sum_all_proposition_delegated_power {
+persistent ghost mapping(address => mathint) sum_all_proposition_delegated_power {
     init_state axiom forall address delegatee. sum_all_proposition_delegated_power[delegatee] == 0;
 }
 
 // =========================================================================
 //   mirror_votingDelegatee
 // =========================================================================
-ghost mapping(address => address) mirror_votingDelegatee { 
+persistent ghost mapping(address => address) mirror_votingDelegatee { 
     init_state axiom forall address a. mirror_votingDelegatee[a] == 0;
 }
 hook Sstore _votingDelegatee[KEY address delegator] address new_delegatee (address old_delegatee) STORAGE {
@@ -72,14 +72,14 @@ hook Sstore _votingDelegatee[KEY address delegator] address new_delegatee (addre
 hook Sload address val _votingDelegatee[KEY address delegator] STORAGE {
     require(mirror_votingDelegatee[delegator] == val);
 }
-invariant mirror_votingDelegatee_correct()
-    forall address a.mirror_votingDelegatee[a] == getVotingDelegatee(a);
+invariant mirror_votingDelegatee_correct(address a)
+    mirror_votingDelegatee[a] == getVotingDelegatee(a);
 
 
 // =========================================================================
 //   mirror_propositionDelegatee
 // =========================================================================
-ghost mapping(address => address) mirror_propositionDelegatee { 
+persistent ghost mapping(address => address) mirror_propositionDelegatee { 
     init_state axiom forall address a. mirror_propositionDelegatee[a] == 0;
 }
 hook Sstore _propositionDelegatee[KEY address delegator] address new_delegatee (address old_delegatee) STORAGE {
@@ -96,14 +96,14 @@ hook Sstore _propositionDelegatee[KEY address delegator] address new_delegatee (
 hook Sload address val _propositionDelegatee[KEY address delegator] STORAGE {
     require(mirror_propositionDelegatee[delegator] == val);
 }
-invariant mirror_propositionDelegatee_correct()
-    forall address a.mirror_propositionDelegatee[a] == getPropositionDelegatee(a);
+invariant mirror_propositionDelegatee_correct(address a)
+    mirror_propositionDelegatee[a] == getPropositionDelegatee(a);
 
 
 // =========================================================================
 //   mirror_delegationMode
 // =========================================================================
-ghost mapping(address => ATokenWithDelegation_Harness.DelegationMode) mirror_delegationMode { 
+persistent ghost mapping(address => ATokenWithDelegation_Harness.DelegationMode) mirror_delegationMode { 
     init_state axiom forall address a. mirror_delegationMode[a] ==
         ATokenWithDelegation_Harness.DelegationMode.NO_DELEGATION;
 }
@@ -131,15 +131,15 @@ hook Sstore _userState[KEY address a].delegationMode ATokenWithDelegation_Harnes
 hook Sload ATokenWithDelegation_Harness.DelegationMode val _userState[KEY address a].delegationMode STORAGE {
     require(mirror_delegationMode[a] == val);
 }
-invariant mirror_delegationMode_correct()
-    forall address a.mirror_delegationMode[a] == getDelegationMode(a);
+invariant mirror_delegationMode_correct(address a)
+    mirror_delegationMode[a] == getDelegationMode(a);
 
 
 
 // =========================================================================
 //   mirror_balance
 // =========================================================================
-ghost mapping(address => uint120) mirror_balance { 
+persistent ghost mapping(address => uint120) mirror_balance { 
     init_state axiom forall address a. mirror_balance[a] == 0;
 }
 hook Sstore _userState[KEY address a].balance uint120 balance (uint120 old_balance) STORAGE {
@@ -166,8 +166,8 @@ hook Sstore _userState[KEY address a].balance uint120 balance (uint120 old_balan
 hook Sload uint120 bal _userState[KEY address a].balance STORAGE {
     require(mirror_balance[a] == bal);
 }
-invariant mirror_balance_correct()
-    forall address a.mirror_balance[a] == getBalance(a);
+invariant mirror_balance_correct(address a)
+    mirror_balance[a] == getBalance(a);
 
 
 
@@ -190,14 +190,14 @@ invariant inv_voting_power_correct(address user)
      ( (mirror_delegationMode[user]==FULL_POWER_DELEGATED() ||
         mirror_delegationMode[user]==VOTING_DELEGATED())     ? 0 : mirror_balance[user])
     )
-//    filtered {f -> !is_mint_burn_func(f)}
+    filtered { f -> !f.isView && f.contract == currentContract}
 {
     preserved with (env e) {
         requireInvariant user_cant_voting_delegate_to_himself();
     }
 }
 
-invariant inv_proposition_power_correct(address user) 
+invariant inv_proposition_power_correct(address user)
     user != 0 =>
     (
      to_mathint(getPowerCurrent(user, PROPOSITION_POWER()))
@@ -206,7 +206,7 @@ invariant inv_proposition_power_correct(address user)
      ( (mirror_delegationMode[user]==FULL_POWER_DELEGATED() ||
         mirror_delegationMode[user]==PROPOSITION_DELEGATED())     ? 0 : mirror_balance[user])
     )
-//    filtered {f -> !is_mint_burn_func(f)}
+    filtered { f -> !f.isView && f.contract == currentContract}
 {
     preserved with (env e) {
         requireInvariant user_cant_proposition_delegate_to_himself();
