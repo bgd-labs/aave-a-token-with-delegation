@@ -749,7 +749,9 @@ rule votingDelegateChanges(address alice, method f) {
 
     @Link:
 */
-rule votingPowerChanges(address alice, method f) {
+rule votingPowerChanges(address alice, method f) 
+filtered { f -> !f.isView && f.contract == currentContract}
+{
     env e;
     calldataarg args;
 

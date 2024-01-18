@@ -151,7 +151,9 @@ rule NoChangeTotalSupply(method f)
     filtered {f ->
         f.selector != sig:burn(address,address,uint256,uint256).selector &&
         f.selector != sig:mint(address,address,uint256,uint256).selector &&
-        f.selector != sig:mintToTreasury(uint256,uint256).selector
+        f.selector != sig:mintToTreasury(uint256,uint256).selector &&
+        !f.isView &&
+        f.contract == currentContract
         }
 {
     //    require f.selector != sig:burn(uint256).selector && f.selector != sig:mint(address, uint256).selector;

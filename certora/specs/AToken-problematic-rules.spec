@@ -1,15 +1,12 @@
 
 
-/*===============================================================================================
+/*=============================================================================================
   The rules of this file were part of the file AToken.spec.
-  The reason for the separation is that the rules of this file are timed-out if not run separately.
+  The reason for the separation is that the rules of this file are timed-out if not 
+  run separately.
   Hence, in the CI we run all the rules of AToken.spec simultaneously, and each rule of
   this file alone.
-  ===============================================================================================*/
-
-
-
-
+  =============================================================================================*/
 
 
 
@@ -65,7 +62,7 @@ definition bounded_error_eq(uint x, uint y, uint scale) returns bool =
     &&
     to_mathint(x) + (bound() * scale) >= to_mathint(y);
 
-ghost sumAllBalance() returns mathint {
+persistent ghost sumAllBalance() returns mathint {
     init_state axiom sumAllBalance() == 0;
 }
 
@@ -81,7 +78,7 @@ hook Sstore _userState[KEY address a].balance uint120 balance (uint120 old_balan
 
 invariant totalSupplyEqualsSumAllBalance(env e)
     totalSupply(e) == scaledBalanceOfToBalanceOf(require_uint256(sumAllBalance()))
-    filtered { f -> !f.isView }
+    filtered { f -> !f.isView && f.contract == currentContract}
     {
         preserved mint(address caller, address onBehalfOf, uint256 amount, uint256 index) with (env e2) {
             require index == gRNI();
@@ -117,7 +114,7 @@ rule additiveTransfer(address from1, address from2, address to1, address to2, ui
     uint256 balanceFromScenario1 = balanceOf(from1);
     uint256 balanceToScenario1 = balanceOf(to1);
     
-    transfer(e2, to2, PLUS256(x,y));
+    transfer(e2, to2, require_uint256(x+y));
     
     uint256 balanceFromScenario2 = balanceOf(from2);
     uint256 balanceToScenario2 = balanceOf(to2);
@@ -126,3 +123,22 @@ rule additiveTransfer(address from1, address from2, address to1, address to2, ui
         bounded_error_eq(balanceToScenario1, balanceToScenario2, 3), "transfer is not additive";
 }
 
+
+rule additiveBurn(address user1, address user2, address to1, address to2, uint256 x, uint256 y)
+{
+    env e;
+    uint256 indexRay = gRNI();
+    require (user1 != user2 && to1 != to2 && user1 != to2 && user2 != to1 &&
+             (user1 == to1 <=> user2 == to2) &&
+             balanceOf(user1) == balanceOf(user2) && balanceOf(to1) == balanceOf(to2));
+    require user1 != currentContract && user2 != currentContract;
+    
+    burn(e, user1, to1, x, indexRay);
+    burn(e, user1, to1, y, indexRay);
+    uint256 balanceUserScenario1 = balanceOf(user1);
+    
+    burn(e, user2, to2, require_uint256(x+y), indexRay);
+    uint256 balanceUserScenario2 = balanceOf(user2);
+
+    assert bounded_error_eq(balanceUserScenario1, balanceUserScenario2, 3), "burn is not additive";
+}
